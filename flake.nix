@@ -17,6 +17,7 @@
           numpy
           pandas
           matplotlib
+          ipython
         ];
         rPackages = with pkgs.rPackages; [
           ggplot2
@@ -27,13 +28,17 @@
       in
       {
         devShells.default = pkgs.mkShell {
-          packages = with pkgs; [
-            quarto
-            pandoc
-            texliveMedium
-            python313
-            R
-          ] ++ pythonPackages ++ rPackages;
+          packages =
+            with pkgs;
+            [
+              quarto
+              pandoc
+              texliveMedium
+              python313
+              R
+            ]
+            ++ pythonPackages
+            ++ rPackages;
         };
       }
     );

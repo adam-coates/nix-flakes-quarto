@@ -1,0 +1,15 @@
+---
+title: Test
+citeproc: false
+format:
+  docx:
+    filters:
+      - zotero.lua
+    metadata:
+      zotero_author-in-text: "true"
+---
+
+This is a test citation @coatesHighresolutionDatasetManual2024.
+
+This is a test citation [@coatesHighresolutionDatasetManual2024].
+

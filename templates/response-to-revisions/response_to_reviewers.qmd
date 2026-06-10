@@ -1,0 +1,131 @@
+---
+title: "Response to the reviews"
+format:
+  pdf:
+    documentclass: article
+    papersize: letter
+    geometry:
+      - top=0.79in
+      - bottom=0.79in
+      - left=0.79in
+      - right=0.79in
+    fontsize: 10pt
+    mainfont: "TeX Gyre Heros"
+    sansfont: "TeX Gyre Heros"
+    linestretch: 1.15
+    colorlinks: true
+    linkcolor: "link-blue"
+    urlcolor: "link-blue"
+    include-in-header: preamble.tex
+    keep-tex: false
+  docx:
+    reference-doc: custom-reference.docx
+filters:
+  - response-letter
+---
+
+We would like to thank both of the reviewers for their helpful comments and suggestions in helping us to improve our manuscript. We have addressed all concerns and believe that our manuscript is now ready for publication. Below we provide a detailed response to each of the points raised by the reviewers (in black font). Our response is provided in [blue font]{.response-inline}. Citations of new or changed parts of the revised manuscript are shown in [light blue italic]{.citation-inline}.
+
+# Reviewer: 1
+
+::: {.reviewer-comment}
+Comments to the Author
+
+This is where you paste the reviewer's general comments. Their text appears in black (the default color), preserving the look of the original review.
+:::
+
+## R1.1 {.unnumbered}
+
+::: {.reviewer-comment}
+1. Paste the reviewer's first major comment here. This block uses the default black text styling, matching how reviewer comments appear in the original document.
+:::
+
+::: {.response}
+We thank the reviewer for this comment. Your response goes here in blue text. Explain what changes you made and why.
+:::
+
+::: {.citation}
+*Here you quote the new or changed text from the revised manuscript. This appears in light blue italic, matching the original document's convention for citing manuscript edits.*
+:::
+
+::: {.figcaption}
+**Figure X.** Description of a new or updated figure, if applicable.
+:::
+
+## R1.2 {.unnumbered}
+
+::: {.reviewer-comment}
+2. Paste the reviewer's second major comment here.
+:::
+
+::: {.response}
+Your response to this comment goes here. Describe any new analyses, supplementary figures, or text additions.
+:::
+
+::: {.citation}
+*Quoted text from the revised manuscript goes here.*
+:::
+
+## R1.3 {.unnumbered}
+
+::: {.reviewer-comment}
+3. Paste the next comment here.
+:::
+
+::: {.response}
+Your response here.
+:::
+
+### Minor Comments {.unnumbered}
+
+## r1.1 {.unnumbered}
+
+::: {.reviewer-comment}
+1. Minor comment from reviewer 1.
+:::
+
+::: {.response}
+Response to the minor comment.
+:::
+
+::: {.citation}
+*Cited manuscript change.*
+:::
+
+# Reviewer: 2
+
+::: {.reviewer-comment}
+Comments to the Author
+
+Paste the second reviewer's general comments here.
+:::
+
+## R2.1 {.unnumbered}
+
+::: {.reviewer-comment}
+1. First comment from reviewer 2.
+:::
+
+::: {.response}
+Your response here.
+:::
+
+::: {.citation}
+*Cited manuscript text.*
+:::
+
+## R2.2 {.unnumbered}
+
+::: {.reviewer-comment}
+2. Second comment from reviewer 2.
+:::
+
+::: {.response}
+Your response here.
+:::
+
+# References {.unnumbered}
+
+::: {.references}
+Author, A. B., Author, C. D., & Author, E. F. (2024). Title of the article. *Journal Name*, *Volume*(Issue), Pages. <https://doi.org/10.xxxx/xxxxx>
+:::

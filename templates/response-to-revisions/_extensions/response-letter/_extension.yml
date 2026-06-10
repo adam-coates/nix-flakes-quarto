@@ -1,0 +1,6 @@
+title: Response Letter
+author: Response Letter Template
+version: 1.0.0
+contributes:
+  filters:
+    - response-letter.lua

@@ -1,0 +1,89 @@
+% ============================================================
+% Response-to-Reviewers Quarto Template — LaTeX Preamble
+% Matches the styling from the original .docx response letter
+% ============================================================
+
+% --- Colors (extracted from the original document) ----------
+\usepackage{xcolor}
+\definecolor{reviewer-black}{HTML}{212121}   % Reviewer comment text
+\definecolor{response-blue}{HTML}{2A6099}    % Author response text
+\definecolor{citation-blue}{HTML}{729FCF}    % Light blue italic citations
+\definecolor{link-blue}{HTML}{3465A4}        % Hyperlink color
+\definecolor{heading-black}{HTML}{000000}    % Heading text
+
+% --- Headings (Reviewer: 1, R1.1, etc.) --------------------
+\usepackage{titlesec}
+
+% H1: Bold, black, 12pt (same size as body in original)
+\titleformat{\section}
+  {\normalsize\bfseries\color{heading-black}}
+  {}{0pt}{}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+
+% H2: Bold, black, 10pt — used for comment IDs (R1.1, R2.3)
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{heading-black}}
+  {}{0pt}{}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+% H3: Bold, 10pt — used for "Minor Comments" sub-labels
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{heading-black}}
+  {}{0pt}{}
+\titlespacing*{\subsubsection}{0pt}{8pt}{4pt}
+
+% Remove section numbering
+\setcounter{secnumdepth}{0}
+
+% --- Custom environments -----------------------------------
+
+% Reviewer comment: black text (default, no indent)
+\newenvironment{reviewer-comment}{%
+  \par\color{reviewer-black}\noindent
+}{%
+  \par\vspace{0.5em}
+}
+
+% Author response: blue text
+\newenvironment{response}{%
+  \par\color{response-blue}\noindent
+}{%
+  \par\vspace{0.5em}
+}
+
+% Manuscript citation: light blue italic
+\newenvironment{manuscriptcitation}{%
+  \par\color{citation-blue}\itshape\noindent
+}{%
+  \par\vspace{0.5em}
+}
+
+% Figure caption block (blue text, used after pasting figures)
+\newenvironment{figcaption}{%
+  \par\color{response-blue}\noindent
+}{%
+  \par\vspace{0.5em}
+}
+
+% References section styling
+\newenvironment{references}{%
+  \par\small\noindent
+}{%
+  \par
+}
+
+% Inline spans for the introductory paragraph
+\newcommand{\responseinline}[1]{\textcolor{response-blue}{#1}}
+\newcommand{\citationinline}[1]{\textcolor{citation-blue}{\textit{#1}}}
+
+% --- Page numbering ----------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% --- Misc --------------------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}

@@ -13,3 +13,8 @@ It's possible to also convert to odt/ docx format using pandoc itself:
 ```bash
 pandoc example.qmd -o example.odt --lua-filter=zotero.lua
 ```
+
+
+## ONLYOFFICE
+
+In only office, the citation field codes are different from libreoffice and Microsoft Office products. Therefore a different lua filter is needed if wanting to use ONLYOFFICE -> `zotero-onlyoffice.lua` 

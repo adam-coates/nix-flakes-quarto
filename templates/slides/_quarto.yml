@@ -75,7 +75,7 @@ author:
 # Live polls. The server and the presenter password stay the same all term;
 # only `room` changes, and that is set per week by ./new-week.
 seminar:
-  server: "https://seminar.adamcoates.at/"
+  server: "http://localhost:8080"
   # The venue: rooms are namespaced under it, so use one per course.
   url: "my-course"
   # bcrypt hash of the presenter password. Replace this placeholder with your

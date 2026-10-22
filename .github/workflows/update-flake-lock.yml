@@ -1,0 +1,22 @@
+name: update-flake-lock
+
+on:
+  workflow_dispatch:        # lets you run it by hand from the Actions tab
+  schedule:
+    - cron: "0 6 * * 1"     # every Monday at 06:00 UTC
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - uses: DeterminateSystems/update-flake-lock@v29
+        with:
+          pr-title: "Update flake.lock"
+          pr-labels: dependencies
+          # inputs: nixpkgs   # uncomment to update only nixpkgs, not flake-utils

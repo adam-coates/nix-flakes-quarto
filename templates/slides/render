@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Render a week (or everything) and serve it on :8082.
+#
+#   ./render 03          one week: the fast path while writing
+#   ./render             every week
+#
+# The deck and its poll page are served from one origin, which the live polls
+# need: http://localhost:8082/week-03/ and .../week-03/poll.html
+#
+# Phones cannot reach localhost: for a live test, open the deck on this
+# machine's network address instead, so the QR code points somewhere a phone
+# can get to.
+set -euo pipefail
+cd "$(dirname "$0")"
+source ./_week.sh
+
+target="${1:-}"
+port="${PORT:-8082}"
+
+./build "$target"
+
+path="/"
+[[ -n "$target" ]] && path="/$(resolve_week "$target")/"
+
+echo
+echo "deck  -> http://localhost:${port}${path}"
+echo "poll  -> http://localhost:${port}${path}poll.html"
+echo
+cd _site && python3 -m http.server "$port"

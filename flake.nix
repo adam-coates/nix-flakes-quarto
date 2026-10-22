@@ -8,7 +8,20 @@
 
   outputs =
     inputs:
-    inputs.flake-utils.lib.eachDefaultSystem (
+    {
+      # nix flake init -t github:adam-coates/nix-flakes-quarto#<name>
+      templates = {
+        slides = {
+          path = ./templates/slides;
+          description = "Quarto revealjs slides: plate theme, live polls, PDF handouts";
+        };
+        response-to-revisions = {
+          path = ./templates/response-to-revisions;
+          description = "Response-to-reviewers letter, PDF and DOCX";
+        };
+      };
+    }
+    // inputs.flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = inputs.nixpkgs.legacyPackages.${system};

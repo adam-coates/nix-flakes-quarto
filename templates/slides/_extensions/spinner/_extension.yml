@@ -1,0 +1,13 @@
+title: Spinner
+author: Adam
+version: 1.0.0
+quarto-required: ">=1.4.0"
+contributes:
+  revealjs-plugins:
+    - name: RevealSpinner
+      script:
+        - spinner.js
+      stylesheet:
+        - spinner.css
+  filters:
+    - spinner.lua

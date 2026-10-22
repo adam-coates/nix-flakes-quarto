@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# Publish the rendered slides into a static site's folder (by default an Astro
+# site's public/, which is copied into dist/ verbatim and served as is).
+#
+#   ./deploy 03            just that week (plus the shared libs)
+#   ./deploy               every week
+#   ./deploy 03 /some/dir  a different destination
+#
+#   DEST/site_libs/           reveal.js etc: ONE copy for all weeks
+#   DEST/week-03/index.html   the deck
+#   DEST/week-03/poll.html    the audience's page
+#   DEST/week-03/week-03.pdf  the handout
+set -euo pipefail
+cd "$(dirname "$0")"
+source ./_week.sh
+
+# Where the slides go, and the public URL that folder is served at. Set these
+# once for your site; DEPLOY_DIR / DEPLOY_URL in the environment override them.
+DEST="${2:-${DEPLOY_DIR:-$HOME/blog/public/slides}}"
+BASE_URL="${DEPLOY_URL:-https://adamcoates.at/slides}"
+
+target="${1:-}"
+
+if [[ ! -d "$(dirname "$DEST")" ]]; then
+  echo "no $(dirname "$DEST"); set DEST in ./deploy or pass a destination." >&2
+  exit 1
+fi
+
+# --pdf, always: whatever gets published carries the handout beside the deck.
+./build "$target" --pdf
+
+mkdir -p "$DEST"
+
+# site_libs is shared by every deck. --delete is scoped to this one folder: it
+# prunes assets a Quarto upgrade stopped emitting, without touching the weeks.
+rsync -a --delete _site/site_libs "$DEST/"
+
+if [[ -z "$target" ]]; then
+  # Everything. --delete at this level too, so a week folder renamed in the
+  # source does not leave a stale copy of itself live. search.json is emitted
+  # even with search off and indexes nothing. _site/index.html is kept: it is
+  # Quarto's redirect to the first week, so the base URL lands on a deck.
+  rsync -a --delete --exclude 'site_libs' --exclude 'search.json' --exclude '.*' \
+    _site/ "$DEST/"
+  published=$(find _site -mindepth 2 -name index.html -printf '%h\n' \
+    | grep -v '^_site/site_libs' | sed 's|^_site/||' | sort)
+else
+  dir=$(resolve_week "$target") || { echo "no folder matching '$target'." >&2; exit 1; }
+  rsync -a --delete "_site/$dir" "$DEST/"
+  published="$dir"
+fi
+
+echo
+echo "published to $DEST"
+while IFS= read -r d; do
+  echo "  deck     $BASE_URL/$d/"
+  echo "  poll     $BASE_URL/$d/poll.html"
+  echo "  handout  $BASE_URL/$d/$d.pdf"
+done <<< "$published"

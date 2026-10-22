@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Install the extensions that live on GitHub. plate and spinner are not
+# published, so they ship in _extensions/ with the template.
+#
+#   ./install-extensions            install any that are missing
+#   ./install-extensions --update   reinstall all, at their latest versions
+#
+# The dev shell runs this on entry when one is missing, so a new project gets
+# them the first time you `direnv allow` or `nix develop`. Commit _extensions/
+# afterwards: that pins the versions every later build uses.
+set -euo pipefail
+cd "$(dirname "$0")"
+
+# folder under _extensions/          GitHub repo
+EXTENSIONS=(
+  "adam-coates/livepoll              adam-coates/seminar-quarto"
+  "adam-coates/timer                 adam-coates/timer-quarto"
+  "parmsam/excalidraw                parmsam/quarto-excalidraw"
+  "quarto-ext/pointer                quarto-ext/pointer"
+  "EmilHvitfeldt/roughnotation       EmilHvitfeldt/quarto-roughnotation"
+  "emilhvitfeldt/shapes              emilhvitfeldt/quarto-shapes"
+  "emilhvitfeldt/arrows              emilhvitfeldt/quarto-arrows"
+  "emilhvitfeldt/editable            emilhvitfeldt/quarto-revealjs-editable"
+)
+
+update=""
+[[ "${1:-}" == "--update" ]] && update=1
+
+failed=0
+for entry in "${EXTENSIONS[@]}"; do
+  read -r folder repo <<< "$entry"
+  if [[ -z "$update" && -f "_extensions/$folder/_extension.yml" ]]; then
+    continue
+  fi
+  echo "installing $repo"
+  # Without a version, quarto add fetches the branch called main; a repo whose
+  # default branch is still master needs asking for it by name.
+  if ! quarto add "$repo" --no-prompt > /dev/null 2>&1 &&
+     ! quarto add "$repo@master" --no-prompt > /dev/null 2>&1; then
+    echo "  could not install $repo (offline, or not a quarto add-able repo?)" >&2
+    failed=1
+  fi
+done
+exit "$failed"

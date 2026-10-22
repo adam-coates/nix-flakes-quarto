@@ -1,0 +1,8 @@
+# generated
+_site/
+/.quarto/
+.direnv/
+**/*.quarto_ipynb
+
+# a standalone (non-project) render's output
+*_files/

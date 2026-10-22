@@ -1,0 +1,79 @@
+---
+# The seed ./new-week copies. Keep it lean: anything every deck shares belongs
+# in ../_quarto.yml; only what is genuinely this week's goes here.
+#
+# TITLE and ROOM are filled in by ./new-week.
+title: "TITLE"
+subtitle: "SUBTITLE"
+# date: 2026-10-06
+seminar:
+  room: "ROOM"
+---
+
+## Today
+
+- point one
+- point [the important one]{.rn-fragment rn-type=underline}
+- point three
+
+::: {.notes}
+Menu (bottom left) → Live poll, or Shift+L: enter the password and press Start
+before the first question. Shift+Q shows the QR code full screen.
+:::
+
+## A question to open with
+
+::: {.poll #warmup}
+- [x] the right answer
+- [ ] a plausible wrong one
+- [ ] another
+:::
+
+::: {.notes}
+Space reveals the answer.
+:::
+
+## Content
+
+### A sub-point
+
+Body text, with a [highlight]{.rn-fragment rn-type=highlight} that draws itself.
+
+. . .
+
+::: {.takeaway}
+The one thing to leave with.
+:::
+
+## Discuss with your neighbour
+
+Two minutes. Press <kbd>`</kbd> to draw on the slide.
+
+<!-- the timer is a fixed 300 x 300 px dial: anchor it to a corner -->
+::: {.absolute right=0 bottom=0 width=300px height=300px}
+::: {.timer #discuss seconds=120 starton=interaction}
+:::
+:::
+
+## How did today go?
+
+::: {.likert #feedback scale="agree-5"}
+- The pace was right
+- The examples helped
+:::
+
+## One word for today?
+
+::: {.wordcloud #today max-words="2"}
+:::
+
+## Next week
+
+- what to read
+- what to bring
+
+::: {.notes}
+Before closing the tab: Alt+R saves the class's answers (and drawings) as
+session.json. Put it in this week's folder and ./build --pdf for a handout
+with the results in it.
+:::

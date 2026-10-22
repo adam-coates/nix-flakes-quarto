@@ -1,0 +1,209 @@
+% Preamble for the Moodle handout (format: plate-pdf). The job here is to make a
+% LaTeX document look like it belongs to the deck: same typeface, same colours,
+% same restraint about rules and weight. Nothing below is Reveal-aware — this
+% file only ever sees the linear document Pandoc builds from the same source.
+%
+% Two things arrive from elsewhere and are deliberately not hardcoded here:
+%
+%   * the brand colours, injected as \definecolor by handout.lua so _brand.yml
+%     stays the single source of truth;
+%   * the fonts, loaded by relative path from the extension.
+%
+% See the notes at each site below.
+
+% ------------------------------------------------------------------ colours
+%
+% Defaults, in case handout.lua did not run (rendering this format outside the
+% project, say). Guarded so that whichever of the two blocks LaTeX sees first,
+% the brand wins: if the filter already defined a colour, this leaves it alone;
+% if the filter's block comes later, its \definecolor simply overrides.
+\makeatletter
+\@ifundefined{\string\color@plate-ink}{\definecolor{plate-ink}{HTML}{15181B}}{}
+\@ifundefined{\string\color@plate-primary}{\definecolor{plate-primary}{HTML}{2A5B8C}}{}
+\@ifundefined{\string\color@plate-danger}{\definecolor{plate-danger}{HTML}{A6323F}}{}
+\@ifundefined{\string\color@plate-muted}{\definecolor{plate-muted}{HTML}{6E747C}}{}
+\makeatother
+
+% The hairline used for the header rule and under tables. Mixed rather than
+% pinned, so it tracks the ink colour like $rule does in the SCSS.
+\colorlet{plate-rule}{plate-ink!22!white}
+
+% -------------------------------------------------------------------- fonts
+%
+% The same Inter the deck uses, unpacked from woff2 to ttf by
+% fonts/build-pdf-fonts.sh. The path is relative because every deck in this
+% project sits exactly one folder below the root (week-01/index.qmd,
+% template/index.qmd) and LaTeX runs in the deck's own folder. A deck nested any
+% deeper would need this adjusted — that is the one assumption this file makes
+% about where it is called from.
+%
+% Light (300) for headings is the whole look of the theme; Regular for body,
+% because Light at 10.5pt on paper is too pale to read comfortably. That split is
+% the one deliberate difference from the slides, where everything is Light.
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+
+\newfontfamily\plateLight{Inter-Light.ttf}[
+  Path = ../_extensions/adamcoates/plate/fonts/ttf/,
+  ItalicFont = Inter-LightItalic.ttf,
+]
+
+\setmainfont{Inter-Regular.ttf}[
+  Path = ../_extensions/adamcoates/plate/fonts/ttf/,
+  ItalicFont = Inter-Italic.ttf,
+  BoldFont = Inter-SemiBold.ttf,
+  BoldItalicFont = Inter-Italic.ttf,
+  Numbers = {Lining, Proportional},
+]
+
+\setsansfont{Inter-Regular.ttf}[
+  Path = ../_extensions/adamcoates/plate/fonts/ttf/,
+  ItalicFont = Inter-Italic.ttf,
+  BoldFont = Inter-SemiBold.ttf,
+]
+
+% Emoji. The decks use them as inline markers (📧 before an address, 🏛️ before an
+% office). Inter has no such glyphs, so LaTeX drops them silently — the browser
+% renders them fine, so the gap only ever shows up in the PDF.
+%
+% handout.lua rewrites the ones that appear in these decks into FontAwesome
+% glyphs, which need the package loaded whether or not the document also has a
+% callout (Quarto pulls fontawesome5 in only when one is present).
+%
+% A colour-emoji fallback font was the other option and is not worth it: Noto
+% Color Emoji is a bitmap face that lualatex renders poorly, and it is invisible
+% inside the nix devShell in any case.
+\usepackage{fontawesome5}
+
+% ----------------------------------------------------------------- headings
+%
+% Mirrors the deck: large and Light with space under it, never a rule or a
+% coloured bar. h3 is the accented sub-heading (italic lapis) and h4 the warning
+% register (claret) — the same two flourishes the slides allow themselves.
+\addtokomafont{disposition}{\plateLight}
+\setkomafont{section}{\plateLight\LARGE\color{plate-ink}}
+\setkomafont{subsection}{\plateLight\Large\color{plate-ink}}
+\setkomafont{subsubsection}{\plateLight\large\itshape\color{plate-primary}}
+\setkomafont{paragraph}{\normalsize\color{plate-danger}}
+
+% One page per slide. In the deck `#` opens a section and `##` is a slide; here
+% they become \section and \subsection, so a break before each keeps the handout
+% and the projector on the same page — literally. \clearpage rather than
+% \newpage so a figure cannot float past the slide it belongs to and land under
+% the next slide's heading.
+%
+% etoolbox's \pretocmd rather than titlesec's \sectionbreak: titlesec and KOMA
+% each want to own sectioning and warn loudly when both are loaded.
+%
+% Deferred to \AtBeginDocument, and that is not caution — it is required.
+% \RedeclareSectionCommand at the foot of this file *rebuilds* \section, which
+% throws away any patch applied to it beforehand. Patching once the preamble has
+% finished is the only point at which nothing can redefine the command back.
+% (\pretocmd reports success either way, so getting this wrong fails silently:
+% the handout simply runs its slides together mid-page.)
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{etoolbox}
+\AtBeginDocument{%
+  \pretocmd{\section}{\clearpage}{}{\PackageWarning{plate}{could not hook \string\section}}%
+  \pretocmd{\subsection}{\clearpage}{}{\PackageWarning{plate}{could not hook \string\subsection}}%
+}
+
+% ------------------------------------------------------- header and footer
+%
+% A hairline, the title on the left, the page number on the right, and the
+% course logo small on the right of the header. Quiet enough to ignore while
+% reading, present enough that a printed page is identifiable.
+\usepackage[headsepline]{scrlayer-scrpage}
+\clearpairofpagestyles
+\setkomafont{pageheadfoot}{\footnotesize\color{plate-muted}}
+\setkomafont{pagenumber}{\footnotesize\color{plate-muted}}
+\renewcommand*{\headfont}{\normalfont\footnotesize\color{plate-muted}}
+
+% The rule under the header, in the same hairline grey the tables use.
+\addtokomafont{headsepline}{\color{plate-rule}}
+\setlength{\headheight}{16pt}
+
+\ihead{\platehandoutshorttitle}
+\ohead{\platehandoutlogo}
+\cfoot{\pagemark}
+
+% Both are filled in by handout.lua (the logo comes from _brand.yml, the short
+% title from the deck's own YAML). Defaults keep a render without the filter from
+% dying rather than from looking right.
+\providecommand{\platehandoutshorttitle}{}
+\providecommand{\platehandoutlogo}{}
+
+% The first page of a KOMA article uses `plain`, which would otherwise drop the
+% header entirely; keep it consistent with every other page.
+\renewcommand*{\titlepagestyle}{scrheadings}
+
+% ------------------------------------------------------------------- tables
+%
+% booktabs is what Pandoc emits for pipe tables. The deck's tables carry rules
+% only under the header and under the last row, at hairline weight — match that
+% rather than LaTeX's heavier default.
+\usepackage{booktabs}
+% colortbl is what defines \arrayrulecolor. Quarto loads xcolor but without the
+% `table` option, so the rule-colouring commands are not there by default.
+\usepackage{colortbl}
+\setlength{\heavyrulewidth}{0.6pt}
+\setlength{\lightrulewidth}{0.4pt}
+\arrayrulecolor{plate-rule}
+\renewcommand{\arraystretch}{1.15}
+
+% ----------------------------------------------------------------- captions
+%
+% Quarto centres captions above tables and under figures. The deck ranges them
+% left in small caps and quiet grey (see `.reveal table caption` in plate.scss);
+% match that, or a centred line over a left-aligned table reads as a mistake.
+\usepackage{caption}
+\captionsetup{
+  justification = raggedright,
+  singlelinecheck = false,
+  font = {small, color = plate-muted},
+  labelfont = {small, color = plate-muted},
+  skip = 4pt,
+}
+
+% ------------------------------------------------------------- justification
+%
+% Ranged left, like the deck. On a 16 cm measure full justification opens rivers
+% around the long uni-graz URLs these decks are full of — LaTeX cannot hyphenate
+% a URL, so it stretches the whole line instead. \RaggedRight keeps hyphenation
+% on for ordinary words, unlike plain \raggedright.
+\usepackage{ragged2e}
+\AtBeginDocument{\RaggedRight}
+\setlength{\RaggedRightRightskip}{0pt plus 2em}
+
+% -------------------------------------------------------------------- links
+%
+% colorlinks is set in _extension.yml; this is only the colour. Everything
+% clickable is lapis, matching the deck, and nothing is boxed.
+%
+% Deferred to \AtBeginDocument because Quarto's template loads hyperref *after*
+% include-in-header — calling \hypersetup here directly is an undefined control
+% sequence.
+\AtBeginDocument{%
+  \hypersetup{
+    linkcolor = plate-primary,
+    urlcolor  = plate-primary,
+    citecolor = plate-primary,
+    filecolor = plate-primary,
+  }%
+}
+
+% --------------------------------------------------------------- title block
+%
+% Echoes the cover slide: title large and Light, subtitle italic lapis under it.
+\setkomafont{title}{\plateLight\Huge\color{plate-ink}}
+\setkomafont{subtitle}{\plateLight\Large\itshape\color{plate-primary}}
+\setkomafont{author}{\normalsize\color{plate-ink}}
+\setkomafont{date}{\normalsize\color{plate-muted}}
+
+% ---------------------------------------------------------------------- toc
+%
+% One line per slide is a useful index for a student scanning the handout, but it
+% wants to read as a list, not as a numbered outline.
+\setkomafont{sectionentry}{\plateLight\large\color{plate-ink}}
+\RedeclareSectionCommand[tocindent=0pt]{section}

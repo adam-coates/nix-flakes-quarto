@@ -1,0 +1,53 @@
+<section id="$idprefix$title-slide"$for(title-slide-attributes/pairs)$ $it.key$="$it.value$"$endfor$ class="quarto-title-block plate-title">
+  <div class="title-body">
+    <h1 class="title">$title$</h1>
+$if(subtitle)$
+    <p class="subtitle">$subtitle$</p>
+$endif$
+
+    <div class="quarto-title-authors">
+$for(by-author)$
+      <div class="quarto-title-author">
+        <div class="quarto-title-author-name">
+$if(by-author.url)$<a href="$by-author.url$">$endif$$if(by-author.name.literal)$$by-author.name.literal$$endif$$if(by-author.url)$</a>$endif$
+        </div>
+$if(by-author.affiliations)$
+$for(by-author.affiliations)$
+        <p class="quarto-title-affiliation">$if(it.url)$<a href="$it.url$">$endif$$it.name$$if(it.url)$</a>$endif$</p>
+$endfor$
+$endif$
+$if(by-author.email)$
+        <div class="quarto-title-author-email"><a href="mailto:$by-author.email$">$by-author.email$</a></div>
+$endif$
+      </div>
+$endfor$
+    </div>
+
+$if(date)$
+    <p class="date">$date$</p>
+$endif$
+$if(institute)$
+$for(institute)$
+    <p class="institute">$institute$</p>
+$endfor$
+$endif$
+  </div>
+
+<!-- The logo column comes after the title block in the DOM as well as on screen:
+     a screen reader should reach the title first, and flex `order` would have put
+     the two out of step. -->
+$if(logo-left)$
+  <div class="title-logos">
+    <img class="title-logo title-logo-left" src="$logo-left$" alt="$if(logo-left-alt)$$logo-left-alt$$endif$">
+$if(logo-right)$
+    <img class="title-logo title-logo-right" src="$logo-right$" alt="$if(logo-right-alt)$$logo-right-alt$$endif$">
+$endif$
+  </div>
+$else$
+$if(logo-right)$
+  <div class="title-logos title-logos-single">
+    <img class="title-logo title-logo-right" src="$logo-right$" alt="$if(logo-right-alt)$$logo-right-alt$$endif$">
+  </div>
+$endif$
+$endif$
+</section>

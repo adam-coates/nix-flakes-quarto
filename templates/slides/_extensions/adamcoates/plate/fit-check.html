@@ -1,0 +1,89 @@
+<script>
+/*
+ * plate: fit check — does every slide's content fit inside the canvas?
+ *
+ * Add ?fit to a deck's URL:
+ *
+ *     http://localhost:8082/week-01/?fit
+ *
+ * Every slide that overflows is listed in the console and outlined in claret in
+ * the deck itself. Run it once before a class and there is nothing left to be
+ * surprised by in the room.
+ *
+ * Why this needs to exist at all: the deck is a fixed 1050x700 canvas that Reveal
+ * scales to whatever screen it lands on, so layout is identical everywhere and
+ * only the size changes. The one thing that is *not* guaranteed is content that
+ * does not fit — the theme clips it (see `overflow: hidden` in plate.scss), so an
+ * over-full slide loses its bottom line consistently rather than showing it on
+ * one screen and hiding it on the next. Consistent, but still lost. This finds
+ * those slides while there is time to fix them.
+ *
+ * Why it cannot simply measure every slide: Reveal only keeps slides near the
+ * current one in the layout. Everything beyond `viewDistance` gets an inline
+ * `display: none`, and a hidden element measures zero — so a naive scan reports
+ * that every distant slide fits perfectly. Each slide is therefore forced
+ * visible for the length of one measurement and put back exactly as it was.
+ */
+(function () {
+  if (!/[?&]fit(?:[=&]|$)/.test(window.location.search)) return;
+
+  function audit() {
+    var slides = Reveal.getSlides();
+    var over = [];
+
+    slides.forEach(function (slide, index) {
+      // Reveal's own inline style, whatever it happens to be — restored below.
+      var display = slide.style.display;
+      slide.style.display = "block";
+
+      // 1px of slack: sub-pixel rounding otherwise reports a slide as overflowing
+      // by a fraction, every time.
+      var overflow = slide.scrollHeight - slide.clientHeight;
+
+      if (overflow > 1) {
+        var heading = slide.querySelector("h1, h2, h3");
+        over.push({
+          "#": index + 1,
+          slide: slide.id || "(no id)",
+          title: heading ? heading.textContent.trim() : "",
+          "overflow px": Math.round(overflow),
+        });
+        slide.classList.add("plate-overflows");
+      } else {
+        slide.classList.remove("plate-overflows");
+      }
+
+      slide.style.display = display;
+    });
+
+    if (over.length) {
+      console.warn(
+        "plate: " + over.length + " of " + slides.length +
+          " slide(s) overflow the canvas — the marked lines will be cut off on every screen."
+      );
+      console.table(over);
+    } else {
+      console.log("plate: all " + slides.length + " slides fit.");
+    }
+
+    return over;
+  }
+
+  function start() {
+    audit();
+    // Re-run on resize: the canvas is fixed, so this should never change the
+    // answer. If it ever does, something is sizing itself from the window
+    // instead of the slide, which is worth knowing about.
+    Reveal.on("resize", audit);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!window.Reveal) return;
+    if (Reveal.isReady()) start();
+    else Reveal.on("ready", start);
+  });
+
+  // Re-runnable by hand after editing, without a reload.
+  window.plateFit = audit;
+})();
+</script>

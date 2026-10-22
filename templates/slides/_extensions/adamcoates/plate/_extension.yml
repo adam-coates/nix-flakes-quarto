@@ -1,0 +1,94 @@
+title: plate
+author: Adam Coates
+version: 1.0.0
+quarto-required: ">=1.9.0"
+contributes:
+  formats:
+    revealjs:
+      theme: [default, plate.scss]
+      filters:
+        - plate.lua
+      template-partials:
+        - title-slide.html
+
+      # Dormant unless the URL carries ?fit — see the file for what it does and
+      # why it cannot be a one-line console snippet.
+      include-in-header:
+        - fit-check.html
+
+      # Canvas geometry is deliberately absent, matching grantmcdermott/clean:
+      # no width, height, margin, min-scale or max-scale. Quarto's defaults
+      # (1050x700, margin 0.1, scale 0.2-2.0) then apply.
+      #
+      # This theme used to set width/height 1280x720 with `margin: 0`, and put
+      # the breathing room back as padding inside each slide. That is one margin
+      # system too many: Reveal's `margin` already insets the content on all four
+      # sides, symmetrically, and is what `clean` relies on. Adding padding on top
+      # of it only works while nothing else disagrees about how wide the slide is
+      # — and the moment something did, the two systems produced a slide that was
+      # correctly padded but incorrectly placed.
+      #
+      # Keep it out. If a deck needs more room round the text, change Reveal's
+      # `margin` (a fraction, so it scales) rather than reintroducing padding.
+
+      # Slides start at the top edge, not vertically centred: with `center: true`
+      # a two-line slide floats in the middle and the deck jitters as content
+      # length changes.
+      center: false
+      slide-number: c/t
+      hash: true
+      history: true
+      transition: none
+      background-transition: none
+      auto-stretch: true
+      highlight-style: monochrome
+      code-block-border-left: true
+      menu:
+        side: left
+      html-math-method:
+        method: mathjax
+
+    # The Moodle handout: the same source as the deck, set as a document. It is
+    # deliberately NOT a picture of the slides — a PDF of screenshots is worse
+    # than either artifact. Text reflows at a readable measure, links stay live,
+    # and one slide becomes one page so a student can follow the handout and the
+    # projector at the same time.
+    #
+    # What makes it look like the deck rather than like LaTeX: Inter (the same
+    # files, unpacked from woff2 by fonts/build-pdf-fonts.sh), the brand colours
+    # driven from _brand.yml through plate.lua, and the same restraint about
+    # rules and weight. See plate-pdf.tex for the preamble.
+    pdf:
+      pdf-engine: lualatex
+      documentclass: scrartcl
+      classoption:
+        - DIV=11 # KOMA's type-area calculation: a ~11/16 text block on A4
+        - parskip=half
+      papersize: a4
+      geometry:
+        - top=28mm
+        - bottom=24mm
+        - left=28mm
+        - right=28mm
+        - headsep=8mm
+      # Numbered headings would fight the deck: slides have titles, not §2.3.
+      number-sections: false
+      toc: true
+      toc-depth: 1
+      colorlinks: true
+      # plate.lua is deliberately absent: it exists to feed the title *slide*'s
+      # two logo slots, and it does that by inlining each file as a base64 data
+      # URI. That is right for a deck that has to work offline from one file, and
+      # wrong here — LaTeX cannot read a data URI, and the handout would carry a
+      # few hundred KB of base64 in its metadata for nothing.
+      filters:
+        - handout.lua
+      include-in-header:
+        - plate-pdf.tex
+      # Callouts as tcolorbox frames; `simple` drops the tinted title bar for a
+      # rule in the semantic colour, which is what the deck does.
+      callout-appearance: simple
+      highlight-style: monochrome
+      fig-align: center
+      # Images are bounded to \linewidth by \pandocbounded; no explicit
+      # fig-width/fig-height so slide images keep their natural size.

@@ -1,0 +1,304 @@
+/*!
+ * spinner — styles for the revealjs fruit-machine draw.
+ *
+ * Everything is driven by custom properties, so a theme preset is just a set
+ * of variables and any single value can be overridden per-slide with the
+ * accent / row-height / font-size attributes.
+ */
+
+.spinner-machine {
+  --sp-rows: 3;
+  --sp-row-h: 110px;
+  --sp-font: 26px;
+  --sp-accent: #e8543f;
+  --sp-accent-dark: #922b21;
+  --sp-label: #1a3d6d;
+  --sp-frame: linear-gradient(160deg, #2c3e57, #16202f);
+  --sp-frame-pad: 10px;
+  --sp-radius: 16px;
+  --sp-window-bg: #f7f9fc;
+  --sp-text: #24303f;
+  --sp-band: rgba(255, 214, 102, .18);
+  --sp-band-line: rgba(26, 61, 109, .35);
+  --sp-ptr: #ffd166;
+  --sp-win: #0b6b3a;
+  --sp-win-glow: rgba(46, 204, 113, .45);
+  --sp-win-band: rgba(46, 204, 113, .22);
+  --sp-row-bg: #f2f5f9;
+  --sp-shadow: 0 14px 34px rgba(0, 0, 0, .35);
+
+  display: block;
+  font-family: inherit;
+}
+
+/* ------------------------------------------------------------- layout ---- */
+.spinner-machine .sp-layout {
+  display: flex;
+  gap: 1.2em;
+  align-items: flex-start;
+}
+.spinner-machine .sp-main { flex: 1 1 58%; min-width: 0; }
+.spinner-machine .sp-side { flex: 0 0 39%; min-width: 0; }
+
+.spinner-machine.sp-results-below .sp-layout { flex-direction: column; gap: .6em; }
+.spinner-machine.sp-results-below .sp-main,
+.spinner-machine.sp-results-below .sp-side { flex: 0 0 auto; width: 100%; }
+.spinner-machine.sp-results-below .sp-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .3em .9em;
+}
+
+/* -------------------------------------------------------------- label ---- */
+.spinner-machine .sp-label {
+  font-size: 1.15em;
+  font-weight: 800;
+  text-align: center;
+  color: var(--sp-label);
+  margin-bottom: .35em;
+  line-height: 1.1;
+}
+
+/* --------------------------------------------------------------- reel ---- */
+.spinner-machine .sp-machine {
+  position: relative;
+  padding: var(--sp-frame-pad);
+  border-radius: var(--sp-radius);
+  background: var(--sp-frame);
+  box-shadow: var(--sp-shadow), inset 0 0 0 3px rgba(255, 255, 255, .08);
+  cursor: pointer;
+}
+.spinner-machine .sp-window {
+  position: relative;
+  height: calc(var(--sp-row-h) * var(--sp-rows));
+  overflow: hidden;
+  border-radius: calc(var(--sp-radius) - 6px);
+  background: var(--sp-window-bg);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 15%, #000 85%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 15%, #000 85%, transparent 100%);
+}
+.spinner-machine .sp-strip { will-change: transform; }
+
+.spinner-machine .sp-item {
+  box-sizing: border-box;
+  height: var(--sp-row-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 .9em;
+  font-size: var(--sp-font);
+  line-height: 1.15;
+  font-weight: 600;
+  color: var(--sp-text);
+}
+/* options already handed out stay visible on the reel, but struck through */
+.spinner-machine .sp-item.sp-taken {
+  opacity: .38;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  font-weight: 500;
+}
+.spinner-machine .sp-item.sp-won { color: var(--sp-win); }
+
+/* highlight band over the centre row */
+.spinner-machine .sp-band {
+  position: absolute;
+  left: var(--sp-frame-pad);
+  right: var(--sp-frame-pad);
+  top: calc(var(--sp-frame-pad) + var(--sp-row-h) * (var(--sp-rows) - 1) / 2);
+  height: var(--sp-row-h);
+  background: var(--sp-band);
+  border-top: 3px solid var(--sp-band-line);
+  border-bottom: 3px solid var(--sp-band-line);
+  border-radius: 4px;
+  pointer-events: none;
+  transition: background .3s ease, box-shadow .3s ease;
+}
+.spinner-machine .sp-machine.sp-landed .sp-band {
+  background: var(--sp-win-band);
+  box-shadow: 0 0 0 4px var(--sp-win-glow), 0 0 40px var(--sp-win-glow);
+}
+.spinner-machine .sp-ptr {
+  position: absolute;
+  top: calc(var(--sp-frame-pad) + var(--sp-row-h) * var(--sp-rows) / 2 - 13px);
+  width: 0; height: 0;
+  border-top: 13px solid transparent;
+  border-bottom: 13px solid transparent;
+  pointer-events: none;
+}
+.spinner-machine .sp-ptr-l { left: -3px;  border-left: 17px solid var(--sp-ptr); }
+.spinner-machine .sp-ptr-r { right: -3px; border-right: 17px solid var(--sp-ptr); }
+
+/* ----------------------------------------------------------- controls ---- */
+.spinner-machine .sp-controls {
+  display: flex;
+  gap: .5em;
+  align-items: center;
+  margin-top: .7em;
+}
+.spinner-machine .sp-btn {
+  font-family: inherit;
+  font-size: .8em;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: .55em 1.5em;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  background: var(--sp-accent);
+  box-shadow: 0 5px 0 var(--sp-accent-dark), 0 9px 16px rgba(0, 0, 0, .22);
+  transition: transform .06s ease, box-shadow .06s ease, opacity .2s ease;
+}
+.spinner-machine .sp-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--sp-accent-dark), 0 5px 10px rgba(0, 0, 0, .22);
+}
+.spinner-machine .sp-btn:focus-visible { outline: 3px solid var(--sp-label); outline-offset: 3px; }
+.spinner-machine .sp-btn.sp-ghost {
+  font-size: .62em;
+  padding: .5em .9em;
+  color: #3d4b5c;
+  background: #eef1f6;
+  box-shadow: 0 4px 0 #c8d0da;
+}
+.spinner-machine .sp-btn.sp-ghost:active { box-shadow: 0 1px 0 #c8d0da; }
+.spinner-machine .sp-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+.spinner-machine .sp-status {
+  margin-top: .5em;
+  font-size: .55em;
+  color: #6b7786;
+}
+.spinner-machine .sp-error { color: #c0392b; font-style: italic; }
+
+/* ------------------------------------------------------------ results ---- */
+.spinner-machine .sp-side-title,
+.spinner-summary .sp-side-title {
+  margin: 0 0 .4em;
+  font-size: .85em;
+  color: var(--sp-label, #1a3d6d);
+}
+.spinner-machine .sp-list { list-style: none; margin: 0; padding: 0; }
+.spinner-machine .sp-row,
+.spinner-summary .sp-row {
+  display: flex;
+  gap: .45em;
+  align-items: baseline;
+  padding: .3em .55em;
+  margin-bottom: .28em;
+  font-size: .5em;
+  line-height: 1.22;
+  border-radius: 6px;
+  border-left: 5px solid var(--sp-label, #1a3d6d);
+  background: var(--sp-row-bg, #f2f5f9);
+  animation: sp-pop .45s ease;
+}
+.spinner-machine .sp-g,
+.spinner-summary .sp-g { font-weight: 800; color: var(--sp-label, #1a3d6d); white-space: nowrap; }
+
+@keyframes sp-pop {
+  from { opacity: 0; transform: translateX(20px) scale(.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* summary block on a later slide */
+.spinner-summary { --sp-label: #1a3d6d; --sp-row-bg: #f2f5f9; }
+.spinner-summary .sp-summary-body {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .25em .9em;
+}
+.spinner-summary:not(.sp-has-rows) .sp-summary-body::before {
+  content: "Nothing drawn yet.";
+  font-style: italic;
+  opacity: .55;
+  font-size: .6em;
+}
+
+/* =========================================================== themes ===== */
+
+/* classic — navy cabinet, paper-white window (default) */
+
+/* light — flat and quiet, for text-heavy decks */
+.spinner-machine.sp-theme-light {
+  --sp-frame: #e9eef5;
+  --sp-window-bg: #ffffff;
+  --sp-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+  --sp-band-line: rgba(26, 61, 109, .28);
+  --sp-band: rgba(26, 61, 109, .07);
+  --sp-ptr: #1a3d6d;
+}
+
+/* dark — for dark reveal themes */
+.spinner-machine.sp-theme-dark {
+  --sp-frame: linear-gradient(160deg, #101722, #05080d);
+  --sp-window-bg: #1b2532;
+  --sp-text: #e8eef7;
+  --sp-label: #9fc4ff;
+  --sp-band: rgba(159, 196, 255, .12);
+  --sp-band-line: rgba(159, 196, 255, .45);
+  --sp-ptr: #9fc4ff;
+  --sp-win: #6ee7a4;
+  --sp-row-bg: rgba(255, 255, 255, .07);
+  --sp-accent: #3b82f6;
+  --sp-accent-dark: #1c4ea8;
+}
+.spinner-machine.sp-theme-dark .sp-btn.sp-ghost {
+  background: #2a3646; color: #cfd9e6; box-shadow: 0 4px 0 #17202b;
+}
+.spinner-machine.sp-theme-dark .sp-status { color: #98a6b8; }
+
+/* casino — loud, gold and red, for the fun version */
+.spinner-machine.sp-theme-casino {
+  --sp-frame: linear-gradient(160deg, #b3161d, #6d0d12);
+  --sp-frame-pad: 14px;
+  --sp-radius: 22px;
+  --sp-window-bg: #fffdf3;
+  --sp-accent: #f0a500;
+  --sp-accent-dark: #9a6a00;
+  --sp-label: #b3161d;
+  --sp-band: rgba(240, 165, 0, .22);
+  --sp-band-line: rgba(179, 22, 29, .55);
+  --sp-ptr: #ffd700;
+  --sp-shadow: 0 18px 42px rgba(0, 0, 0, .4);
+}
+.spinner-machine.sp-theme-casino .sp-machine {
+  box-shadow: var(--sp-shadow), inset 0 0 0 4px #ffd700;
+}
+.spinner-machine.sp-theme-casino .sp-btn { color: #3a2600; }
+
+/* minimal — hairline box, no chrome at all */
+.spinner-machine.sp-theme-minimal {
+  --sp-frame: transparent;
+  --sp-frame-pad: 0px;
+  --sp-window-bg: transparent;
+  --sp-shadow: none;
+  --sp-band: transparent;
+  --sp-band-line: currentColor;
+  --sp-ptr: currentColor;
+  --sp-text: inherit;
+}
+.spinner-machine.sp-theme-minimal .sp-machine {
+  box-shadow: none;
+  border-radius: 0;
+}
+.spinner-machine.sp-theme-minimal .sp-btn {
+  background: none;
+  color: inherit;
+  border: 2px solid currentColor;
+  box-shadow: none;
+}
+.spinner-machine.sp-theme-minimal .sp-btn:active { transform: none; }
+.spinner-machine.sp-theme-minimal .sp-btn.sp-ghost {
+  background: none; color: inherit; border-width: 1px; box-shadow: none;
+}
+
+/* reveal puts a scrollbar on overflowing slides; the reel never needs one */
+.spinner-machine .sp-window::-webkit-scrollbar { display: none; }
+
+/* a spinner usually sits on a slide with no visible title — `## {.spinner}` —
+   so don't leave an empty heading pushing the machine down the slide */
+.reveal .slides section > h2:empty,
+.reveal .slides section > h1:empty { display: none; }

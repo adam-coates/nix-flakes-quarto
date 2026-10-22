@@ -1,0 +1,92 @@
+# The slides as one Quarto project. Every week is a folder holding just its own
+# index.qmd (plus that week's figures and data); everything shared (the theme,
+# the extensions, the brand, the logos) exists once, here at the root.
+#
+#   * `quarto add <extension>` run in this folder installs into the single
+#     _extensions/ and every week picks it up.
+#   * type: website makes Quarto emit ONE copy of reveal.js into _site/site_libs/
+#     and point every deck at it, instead of a 6 MB copy per deck.
+
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "week-*/index.qmd"
+  # Puts poll.html (the audience's page, which the QR codes point at) beside
+  # every rendered deck.
+  post-render:
+    - _extensions/adam-coates/livepoll/copy-poll-page.lua
+
+# No navbar, sidebar or search: revealjs ignores site navigation anyway.
+website:
+  title: "Slides"
+  search: false
+
+# Shared deck configuration. A week's own YAML holds only what is genuinely
+# per-week (title, subtitle, date, poll room) and inherits the rest.
+#
+# Two formats, one source: plate-revealjs is the deck you present from, plate-pdf
+# the handout, the same content as an A4 document with one page per slide.
+# `./build` renders only the deck; `./build --pdf` and `./deploy` add the
+# handout (lualatex costs ~15 s a week, which the writing loop does not need).
+format:
+  plate-revealjs:
+    excalidraw:
+      button: false
+      shortcut: "`"
+      # Keeps the drawing when the deck is reloaded, and is what lets Alt+R
+      # save the drawings into session.json. Off by default in the extension.
+      useLocalStorage: true
+    revealjs-plugins:
+      # live polls, word clouds, rating scales, Shift+Q QR code, and Alt+R to
+      # save the session (session.json)
+      - livepoll
+      - spinner
+      - excalidraw
+      - pointer
+  plate-pdf: default
+
+# revealjs-plugins (above) ship JavaScript to the browser; filters run at
+# render time. `arrows` only provides a shortcode, so it needs no entry: having
+# it installed is enough to use {{< arrow >}}.
+filters:
+  - livepoll
+  - timer
+  - spinner
+  - shapes
+  - roughnotation
+  - arrows
+
+# `editable` is installed but deliberately not switched on: it puts a toolbar on
+# every slide. Turn it on for the one deck you are laying out, in that deck's
+# YAML, and take it out again before deploying (these lists add to the ones
+# here, they do not replace them):
+#
+#   filters: [editable]
+#   format:
+#     plate-revealjs:
+#       revealjs-plugins: [editable]
+
+author:
+  - name: Dr. Adam Coates
+    email: adam.coates@uni-graz.at
+    affiliations: University of Graz
+
+# Live polls. The server and the presenter password stay the same all term;
+# only `room` changes, and that is set per week by ./new-week.
+seminar:
+  server: "https://seminar.adamcoates.at/"
+  # The venue: rooms are namespaced under it, so use one per course.
+  url: "my-course"
+  # bcrypt hash of the presenter password. Replace this placeholder with your
+  # own (README.md, "Live polls"); until then the decks work but cannot host.
+  hash: "$2a$05$REPLACE.THIS.WITH.YOUR.OWN.BCRYPT.HASH.SEE.README.."
+
+livepoll:
+  layout: embedded # embedded (all on one slide) | classic (buttons + results slide)
+  auto-activate: true # opening a question's slide makes it the live one
+
+spinner:
+  duration: 6s
+  cycles: 3
+  theme: classic

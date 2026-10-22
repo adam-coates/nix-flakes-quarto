@@ -1,0 +1,65 @@
+# Single source of truth for colour and type across every format rendered from
+# this folder. The plate theme reads these through the standard Sass variables
+# ($primary, $success, $body-bg, …) rather than hardcoding hexes, so changing a
+# colour here changes it everywhere — slides, lists, tables, callouts, the poll
+# widgets and the countdown timer.
+
+meta:
+  name: Adam Coates — teaching decks
+
+color:
+  palette:
+    # Two colours do the visible work: lapis for anything structural (links,
+    # h3, the cover subtitle, list markers) and claret for anything that warns.
+    # Everything else is a semantic reserve, used a line at a time.
+    lapis: "#2A5B8C"
+    claret: "#A6323F"
+    slate: "#6E747C" # captions, affiliations, slide numbers — deliberately quiet
+    violet: "#5B4B8A"
+    pine: "#2E6B4F"
+    amber: "#B26A00"
+    ink: "#15181B" # text: near-black, faintly cool, never pure #000
+    paper: "#FFFFFF"
+
+  background: paper
+  foreground: ink
+
+  primary: lapis # links, h3, the cover subtitle, list markers, progress bar
+  secondary: slate # captions, affiliations, slide numbers
+  tertiary: violet # defined terms
+  success: pine # correct answers, positive results
+  info: slate # asides
+  warning: amber # the one thing per slide that matters
+  danger: claret # h4, wrong answers, caveats, misconceptions
+  light: paper
+  dark: ink # only used if the title-slide logo plates are switched on
+
+typography:
+  # source: system means Quarto emits no @font-face and fetches nothing — the
+  # theme embeds subsetted Inter as data URIs instead (see fonts/build-fonts.sh),
+  # so decks render identically offline and after `deploy`, which ships only
+  # index.html, index_files/ and logos/.
+  fonts:
+    - family: Inter
+      source: system
+  base:
+    family: Inter
+    weight: 400
+  headings:
+    # 300 is the whole point of the theme: Inter Light at heading sizes is what
+    # gives the deck its air. Anything heavier and it turns into a corporate
+    # slide deck.
+    family: Inter
+    weight: 300
+  monospace:
+    family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace
+
+logo:
+  # Swap these for the real files; nothing else needs to change. The logos sit
+  # directly on the white title slide, so supply dark-on-transparent artwork. If
+  # the only version you have is light (the yellow-and-white Uni Graz mark, say),
+  # set $logo-plate: true in plate.scss and each logo gets a small dark plate
+  # behind it instead.
+  images:
+    left: logos/left.jpg
+    right: logos/right.png

@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Start a new week's deck from template/week.qmd.
+#
+#   ./new-week 03                     -> week-03/index.qmd
+#   ./new-week 03 psychophysics       -> week-03-psychophysics/index.qmd
+#   ./new-week 03 psychophysics "Psychophysics and thresholds"
+#
+# The folder name is what students see in the URL, so a slug is worth adding
+# once the topic is settled. The poll room is set to match the folder, because
+# two weeks sharing a room share their votes.
+set -euo pipefail
+cd "$(dirname "$0")"
+
+if [[ $# -lt 1 ]]; then
+  echo "usage: ./new-week <NN> [slug] [\"Title\"]" >&2
+  exit 64
+fi
+
+num="$1"
+slug="${2:-}"
+
+if ! [[ $num =~ ^[0-9]{1,2}$ ]]; then
+  echo "week number must be 1-2 digits, got '$num'" >&2
+  exit 64
+fi
+
+# Zero-pad, so week-3 and week-12 sort in order. 10# forces base ten: without
+# it "08" is an invalid octal literal and the script dies.
+printf -v padded '%02d' "$((10#$num))"
+title="${3:-Week $((10#$num))}"
+
+dir="week-$padded"
+[[ -n "$slug" ]] && dir="$dir-$slug"
+
+if [[ -e "$dir" ]]; then
+  echo "$dir already exists; nothing written." >&2
+  exit 1
+fi
+
+mkdir -p "$dir"
+sed -e "s|^title: \"TITLE\"|title: \"$title\"|" \
+    -e "s|^  room: \"ROOM\"|  room: \"$dir\"|" \
+    template/week.qmd > "$dir/index.qmd"
+
+echo "created $dir/index.qmd  (poll room: $dir)"
+echo
+echo "  edit it, then:  ./render $padded"

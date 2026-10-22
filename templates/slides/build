@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Render into _site/ without serving or publishing. `render` and `deploy` both
+# call this; use it directly when you only want to know a deck still builds.
+#
+#   ./build 03          one week, deck only
+#   ./build 03 --pdf    that week's deck and its PDF handout
+#   ./build             every week, decks only
+#   ./build --pdf       every week, decks and handouts
+#
+# --pdf is opt-in because lualatex costs ~15 s a week, a poor trade while you
+# are writing and re-rendering every couple of minutes. `./deploy` always
+# passes it, so what gets published always includes the handout.
+set -euo pipefail
+cd "$(dirname "$0")"
+source ./_week.sh
+
+target=""
+with_pdf=""
+
+for arg in "$@"; do
+  case "$arg" in
+    --pdf) with_pdf=1 ;;
+    -*)
+      echo "unknown option '$arg'; only --pdf is understood." >&2
+      exit 64
+      ;;
+    *)
+      if [[ -n "$target" ]]; then
+        echo "give at most one week (got '$target' and '$arg')." >&2
+        exit 64
+      fi
+      target="$arg"
+      ;;
+  esac
+done
+
+# Both formats, or just the deck. _quarto.yml declares plate-revealjs and
+# plate-pdf, so a render with no --to builds both.
+#
+# It has to be one invocation covering both, not one per format: a website
+# render prunes outputs that are not part of *this* render, so a separate
+# plate-pdf pass would delete the decks the plate-revealjs pass just wrote.
+to=(--to plate-revealjs)
+[[ -n "$with_pdf" ]] && to=()
+
+if [[ -z "$target" ]]; then
+  # A plain glob, not `compgen`: the bash inside the nix shell is the
+  # non-interactive build, which does not have it.
+  shopt -s nullglob
+  weeks=(week-*/index.qmd)
+  shopt -u nullglob
+  if [[ ${#weeks[@]} -eq 0 ]]; then
+    echo "no weeks yet; ./new-week 01 creates the first." >&2
+    exit 1
+  fi
+  # Quarto only ever adds to _site: it never removes the output of a week you
+  # have since renamed or deleted, and `deploy` would then publish that ghost.
+  rm -rf _site
+  quarto render "${to[@]}"
+else
+  dir=$(resolve_week "$target") || {
+    echo "no folder matching '$target'; ./new-week $target creates one." >&2
+    exit 1
+  }
+  quarto render "$dir/index.qmd" "${to[@]}"
+fi
+
+[[ -n "$with_pdf" ]] && name_handouts
+exit 0

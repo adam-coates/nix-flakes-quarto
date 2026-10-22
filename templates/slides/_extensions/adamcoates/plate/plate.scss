@@ -1,0 +1,1069 @@
+/*-- scss:defaults --*/
+
+// Colour and type family come from _brand.yml, which Quarto turns into the
+// standard Sass variables ($primary, $success, $body-bg, $font-family-sans-serif
+// …). Do NOT redeclare those here: a theme's `!default` is emitted *before* the
+// brand layer, so `$primary: … !default` in this block silently wins and
+// _brand.yml stops being the source of truth. Everything below is Reveal
+// geometry and weight, which the brand has no opinion about.
+
+// 28px against Quarto's 1050x700 canvas.
+//
+// This was 32px when the canvas was 1280 wide. Moving to 1050 narrowed the
+// measure by about 9% without shrinking the type, so slides that used to fit
+// stopped fitting — the same words simply take more lines. 28px gives that back
+// and a little besides.
+//
+// The floor is legibility from the back of a lecture room, not the look on a
+// laptop: Inter Light needs size to read as light rather than weak, so this is
+// as far down as the theme should go. A single crowded slide wants `{.smaller}`
+// on its heading, not a smaller root here.
+$presentation-font-size-root: 28px;
+$presentation-line-height: 1.45;
+
+$presentation-h1-font-size: 1.6em;
+$presentation-h2-font-size: 1.4em;
+$presentation-h3-font-size: 0.95em;
+$presentation-h4-font-size: 0.9em;
+// 300 = Inter Light, matching typography.headings.weight in _brand.yml. This is
+// the single decision the whole theme hangs on; see the note there.
+$presentation-heading-font-weight: 300;
+$presentation-heading-line-height: 1.25;
+$presentation-block-margin: 14px;
+
+/*-- scss:rules --*/
+
+@import "fonts/inter";
+
+// ---------------------------------------------------------------- variables
+
+// Set to true if your logos are light artwork (the yellow-and-white Uni Graz
+// mark, for instance) and would vanish against the white title slide: each logo
+// then gets a small dark plate behind it, sized to the logo. Dark-on-transparent
+// artwork wants this left at false — the deck then has no dark field anywhere,
+// which is the look this theme is after.
+$logo-plate: false;
+
+// Reveal's own `margin` (Quarto's default 0.1, see _extension.yml) is what holds
+// the content off the slide edges now — one system, applied on all four sides,
+// scaling with the canvas. These are zero so the theme does not inset the
+// content a second time on top of it.
+//
+// They stay as variables rather than being deleted because the title slide uses
+// them to align its logo block with the body text of the slides that follow.
+$slide-pad-x: 0;
+$slide-pad-y: 0;
+
+// The box each title-slide logo is fitted into, on the 1280x720 canvas. Two of
+// these stacked plus their gap and the slide padding has to stay inside 720, so
+// much above 200px starts to crowd.
+//
+// Worth knowing when tuning these: the *box* is not what the eye measures. Both
+// current logo files carry white margin inside the image — left.jpg spends about
+// 28% of its height on it — so the mark always reads smaller than the number
+// here. Crop the files and this can come back down.
+$title-logo-height: 185px;
+$title-logo-width: 320px;
+
+// Derived tones, computed from the brand colours rather than pinned, so editing
+// _brand.yml carries through to rules, borders and tints.
+$rule: mix($body-color, $body-bg, 16%);
+$rule-strong: mix($body-color, $body-bg, 32%);
+$tint: mix($primary, $body-bg, 6%);
+$muted: mix($body-color, $body-bg, 55%);
+
+// -------------------------------------------------------------------- canvas
+
+.reveal .slides section {
+  padding: $slide-pad-y $slide-pad-x;
+  box-sizing: border-box;
+
+  // The slide clips its own canvas. Reveal only clips at `.reveal`, which is the
+  // *viewport* — so a slide whose content runs past 720px spills outside the
+  // canvas and is then cut off by the window instead of by the slide.
+  //
+  // That is why a deck looks different on different screens. Reveal letterboxes
+  // the 1280x720 canvas, and whether the spill lands on visible slack or is cut
+  // by the window edge depends on the window's aspect ratio: on a wide, short
+  // screen the scale is limited by height, there is no slack, and the overflow
+  // vanishes; on a squarer one it shows. Same deck, same browser, two results.
+  //
+  // Clipping here makes the canvas the single source of truth: what does not fit
+  // in 1280x720 is not shown, anywhere, on any monitor. The deck now looks the
+  // same in the editor as it does on the projector — including when it is wrong,
+  // which is the point. To find the slides where it is wrong, open the deck with
+  // ?fit (see fit-check.html). Each one it marks needs less on it, or
+  // `{.smaller}` on its heading.
+  overflow: hidden;
+}
+
+// Marked by the ?fit check. Deliberately loud, and impossible to arrive at by
+// accident: the class is only ever applied by fit-check.html, which only runs
+// when the URL asks for it.
+.reveal .slides section.plate-overflows {
+  outline: 3px solid $danger;
+  outline-offset: -3px;
+
+  &::after {
+    content: "content is cut off below";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 0.25em 0.6em;
+    background: $danger;
+    color: $body-bg;
+    font-size: 0.5em;
+    letter-spacing: 0.02em;
+  }
+}
+
+// ---------------------------------------------------------------- typography
+
+.reveal {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // calt/liga are Inter's defaults; cv05 gives the lowercase l a tail so it
+  // stops reading as a 1 on a projector.
+  font-feature-settings: "calt" 1, "liga" 1, "cv05" 1;
+  letter-spacing: -0.003em;
+}
+
+// Body copy stays at 400 while the headings go light. Inter Light is beautiful
+// at 45px and thin at 22px, and the back row of a lecture room is the constraint
+// that decides it.
+.reveal p,
+.reveal li {
+  font-weight: 400;
+}
+
+// Air between paragraphs is what makes a light-weight deck read as calm rather
+// than sparse.
+.reveal p {
+  margin-top: 1.1em;
+}
+
+.reveal strong,
+.reveal b {
+  font-weight: 600;
+}
+
+.reveal em {
+  font-style: italic;
+}
+
+// Links are coloured and nothing else until you point at them. The permanent
+// underline every Reveal theme ships turns a slide with three references into a
+// dotted mess.
+.reveal a {
+  color: $primary;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease-in-out;
+
+  &:hover {
+    border-bottom-color: mix($primary, $body-bg, 55%);
+  }
+}
+
+// -------------------------------------------------------------------- headings
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  color: $body-color;
+  font-weight: 300;
+  // Inter tightens up nicely at display sizes; at Light the tracking has to stay
+  // modest or the letters come apart.
+  letter-spacing: -0.014em;
+  text-transform: none;
+}
+
+// A slide heading is followed by space, not by a rule. No underlines, no bars,
+// no coloured blocks: the heading is large and light and that is the whole
+// device.
+.reveal .slides section:not(.plate-title) > h1:first-child,
+.reveal .slides section:not(.plate-title) > h2:first-child {
+  margin-bottom: 0.7em;
+}
+
+// h3 is the accented sub-heading — italic lapis, the one recurring flourish.
+.reveal h3 {
+  color: $primary;
+  font-style: italic;
+  font-weight: 300;
+  margin-top: 1.1em;
+}
+
+// h4 is the warning register: claret, upright, slightly heavier so it reads as a
+// label rather than a thought.
+.reveal h4 {
+  color: $danger;
+  font-weight: 400;
+  margin-top: 1.1em;
+}
+
+// ----------------------------------------------------------------- title slide
+
+.reveal .slides section.plate-title {
+  // Quarto stamps `center` on the title slide and Reveal implements that with an
+  // inline `top`. Undo it and lay the slide out here instead.
+  &.center {
+    top: 0 !important;
+    height: 100% !important;
+  }
+
+  // Two columns: the title block left, the logos right, both centred against
+  // each other. The gap is a real flex gap rather than padding on the logos, so
+  // a very long title reflows instead of colliding.
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 56px;
+  box-sizing: border-box;
+  padding: $slide-pad-y $slide-pad-x;
+  text-align: left;
+
+  .title-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0;
+  }
+
+  h1.title {
+    font-size: 1.55em;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0;
+    text-align: left;
+    border-bottom: none;
+  }
+
+  p.subtitle {
+    color: $primary;
+    font-size: 0.85em;
+    font-weight: 300;
+    font-style: italic;
+    margin: 0.35em 0 0 0;
+    text-align: left;
+  }
+
+  .quarto-title-authors {
+    display: flex;
+    justify-content: flex-start;
+    gap: 2.5em;
+    margin-top: 2em;
+  }
+
+  .quarto-title-author {
+    width: auto;
+    padding: 0;
+    text-align: left;
+  }
+
+  .quarto-title-author-name {
+    font-size: 0.6em;
+    font-weight: 400;
+    color: $body-color;
+  }
+
+  // Affiliation, email, institute and date all sit in the same quiet italic
+  // register, the way a paper's title block does.
+  //
+  // The explicit `text-align` is not redundant: Quarto centres the title block
+  // with `div.reveal div.slides section.quarto-title-block`, which outweighs the
+  // `text-align: left` on the section above by three element selectors, so
+  // anything that does not state its own alignment inherits centre.
+  .quarto-title-affiliation,
+  .quarto-title-author-email,
+  .institute,
+  .date {
+    font-size: 0.54em;
+    font-style: italic;
+    font-weight: 400;
+    color: $secondary;
+    margin: 0.15em 0 0 0;
+    text-align: left;
+
+    a {
+      color: $secondary;
+      border-bottom: none;
+    }
+  }
+
+  .date {
+    margin-top: 1.4em;
+  }
+
+  // The logo column: stacked, right-aligned, sitting opposite the title. Stacked
+  // rather than side by side because it is what lets them be big — two logos in a
+  // row on the right have half the width to share.
+  .title-logos {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 40px;
+  }
+
+  .title-logo {
+    // Both dimensions are capped and `object-fit: contain` does the rest, so a
+    // logo of any proportion lands inside the same box.
+    max-height: $title-logo-height;
+    max-width: $title-logo-width;
+    width: auto;
+    object-fit: contain;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+
+    @if $logo-plate {
+      background: $dark;
+      padding: 11px 16px;
+      border-radius: 3px;
+      // content-box so the plate is the logo plus its padding, not a fixed size.
+      box-sizing: content-box;
+    } @else {
+      background: none;
+    }
+  }
+
+  // Equal boxes are not equal marks: left.jpg has far more white margin baked
+  // into it than right.png, so at the same box height the Uni Graz block reads
+  // clearly smaller. This is the correction, and it belongs to those two files —
+  // drop it if either is replaced with a tightly cropped version.
+  .title-logo-left {
+    max-height: $title-logo-height * 1.15;
+  }
+}
+
+// A `## Break {.divider background-color="#15181B"}` slide: dark field, light
+// text. Useful between blocks of a long session, and the only place the deck
+// inverts.
+.reveal .slides section.divider {
+  h1,
+  h2,
+  h3 {
+    color: $body-bg;
+    margin-top: 1.2em;
+  }
+
+  h3 {
+    color: mix($primary, $body-bg, 45%);
+  }
+
+  p,
+  li {
+    color: mix($body-bg, $dark, 78%);
+  }
+}
+
+// ---------------------------------------------------------------------- lists
+
+// 16px, as in grantmcdermott/clean. Reveal's own `margin: 0 0 0 1em` on lists is
+// left alone, likewise as in clean.
+.reveal ul,
+.reveal ol {
+  padding-left: 16px;
+
+  li {
+    margin-bottom: 0.35em;
+  }
+}
+
+.reveal ul > li::marker,
+.reveal ol > li::marker {
+  color: mix($primary, $body-bg, 65%);
+}
+
+// A long incremental list has a failure mode: by the last bullet the slide is a
+// wall of five equal-weight paragraphs and the eye has nowhere to go. Add
+// `.dim-past` next to `.incremental` and each bullet recedes once you step past
+// it, leaving the one under discussion as the only thing at full strength.
+//
+//   ::: {.incremental .dim-past}
+//
+// No JavaScript: Reveal already puts `.current-fragment` on the bullet it just
+// revealed and takes it off again on the next step, so the rule below is only
+// reading state the framework maintains. It follows Reveal backwards too.
+.reveal .dim-past li.fragment.visible {
+  color: $muted;
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease;
+
+  // Links dim with the sentence rather than staying at full-strength lapis,
+  // which would otherwise leave a bright word floating in a grey line.
+  a {
+    color: inherit;
+  }
+
+  &::marker {
+    color: $muted;
+  }
+}
+
+.reveal .dim-past li.fragment.current-fragment {
+  color: $body-color;
+
+  a {
+    color: $primary;
+  }
+
+  &::marker {
+    color: mix($primary, $body-bg, 65%);
+  }
+}
+
+// Nesting is carried by the marker shape alone — filled dot, then open circle,
+// then square. Native `list-style-type` keeps every marker outside the text
+// block, so a wrapped line stays aligned under its own first word.
+.reveal ul {
+  list-style-type: disc;
+
+  ul {
+    list-style-type: circle;
+
+    ul {
+      list-style-type: square;
+    }
+  }
+}
+
+// ----------------------------------------------------------------- quotations
+
+.reveal blockquote {
+  border-left: 2px solid mix($primary, $body-bg, 40%);
+  background: none;
+  box-shadow: none;
+  margin: 1em 0;
+  padding: 0.15em 0 0.15em 1em;
+  font-style: italic;
+  font-weight: 400;
+  color: mix($body-color, $body-bg, 80%);
+  width: auto;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// --------------------------------------------------------------------- tables
+
+.reveal table {
+  margin: 0.8em 0;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.85em;
+  // Lining, tabular figures so columns of numbers line up.
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.reveal table th,
+.reveal table td {
+  border: none;
+  padding: 0.35em 0.9em 0.35em 0;
+  text-align: left;
+  vertical-align: top;
+  font-weight: 300;
+}
+
+// Rules only where they carry information: under the header, and under the last
+// row to close the block. No row striping, no vertical lines.
+.reveal table thead th {
+  font-weight: 500;
+  border-bottom: 1px solid $rule-strong;
+}
+
+.reveal table tbody tr:last-child {
+  border-bottom: 1px solid $rule-strong;
+}
+
+// Quarto centres table captions; on a deck where everything else is ranged left,
+// a centred line above a left-aligned table just looks like a mistake.
+.reveal table caption {
+  color: $secondary;
+  font-variant-caps: small-caps;
+  font-size: 0.9em;
+  text-align: left;
+  padding-bottom: 0.4em;
+}
+
+// ----------------------------------------------------------------------- code
+
+// Quarto sets `.reveal pre` to 0.55em and then `.reveal pre.sourceCode code` to
+// `inherit`, which lands a highlighted block at ~18px on a 32px deck — small
+// enough that a lecture room cannot read it. Size the `pre` instead, since that
+// is what the `code` inside is inheriting from.
+.reveal pre {
+  box-shadow: none;
+  width: 100%;
+  margin: 0.8em 0;
+  font-size: 0.7em;
+  line-height: 1.4;
+}
+
+// The tint sits on the wrapper, so it covers the gutter that carries the line
+// numbers as well as the code itself.
+.reveal div.sourceCode {
+  border: none;
+  border-left: 2px solid mix($primary, $body-bg, 30%);
+  border-radius: 0;
+  background: mix($secondary, $body-bg, 5%);
+  margin: 0.8em 0;
+}
+
+// `pre.sourceCode` and not just `pre`: Quarto's own rule for the highlighted
+// case is one class more specific, and forces `background-color: inherit`.
+.reveal pre.sourceCode code,
+.reveal pre code {
+  padding: 0.6em 0.9em;
+  background: none;
+  border-radius: 0;
+  max-height: 520px;
+}
+
+// A plain fenced block has no .sourceCode wrapper to carry the tint, so it goes
+// on the code element itself.
+.reveal pre:not(.sourceCode) > code {
+  background: mix($secondary, $body-bg, 5%);
+  border-left: 2px solid mix($primary, $body-bg, 30%);
+  display: block;
+}
+
+.reveal code:not(pre code) {
+  color: mix($body-color, $primary, 45%);
+  background: mix($secondary, $body-bg, 6%);
+  border-radius: 2px;
+  padding: 0.05em 0.25em;
+  font-size: 0.85em;
+}
+
+// ------------------------------------------------------------------- callouts
+
+// Quarto's callouts arrive as Bootstrap panels: a 0.3rem blue or green bar down
+// the left, a 1px box around the other three sides, and a tinted title strip.
+// All of it goes; what is left is a hairline in the semantic colour.
+//
+// Every selector below mirrors Quarto's own shape (`.reveal div.callout.callout-*`)
+// rather than being written as short as it could be. Anything lighter loses on
+// specificity — and an exact tie is enough, because the theme's rules are
+// emitted after the framework's.
+// The font-size selector is Quarto's, verbatim: it scopes callouts to 0.7em,
+// which on this deck is 22px — small enough that the aside stops being read.
+.reveal .slides section div.callout {
+  font-size: 0.85em;
+}
+
+.reveal div.callout {
+  border-radius: 0;
+  margin: 0.9em 0;
+}
+
+.reveal div.callout.callout-style-default,
+.reveal div.callout.callout-style-simple {
+  border-left-width: 2px;
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+}
+
+$callout-colours: (
+  "note": $primary,
+  "tip": $success,
+  "important": $danger,
+  "warning": $warning,
+  "caution": $tertiary,
+);
+
+@each $name, $colour in $callout-colours {
+  .reveal div.callout.callout-#{$name} {
+    border-left-color: $colour;
+  }
+
+  // The tinted strip behind the title.
+  .reveal div.callout.callout-#{$name}.callout-style-default .callout-title {
+    background: none;
+  }
+}
+
+.reveal div.callout .callout-title p {
+  font-weight: 500;
+}
+
+// Quarto ships each icon as a data-URI *background-image* with a Bootstrap colour
+// baked into the SVG's fill — bright #0C63E4 for note, where this deck's note
+// colour is lapis. A background-image cannot be recoloured, so the icons are
+// re-laid as masks instead: the same Bootstrap Icons artwork, fill stripped,
+// painted with `background-color` from $callout-colours above. Colour therefore
+// follows _brand.yml like everything else, and the icon always matches the rule
+// beside it.
+//
+// The cost is the one the old comment warned about: this pins the artwork. These
+// five paths are copies of what Quarto 1.9 emits, so an upstream icon redesign
+// will not reach this deck until they are re-extracted. That is the trade for
+// icons that are on-brand rather than Bootstrap-blue.
+$callout-icons: (
+  "note": url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 class=%22bi bi-info-circle%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z%22/%3E%3Cpath d=%22m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z%22/%3E%3C/svg%3E"),
+  "tip": url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 class=%22bi bi-lightbulb%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a1.964 1.964 0 0 0-.453-.618A5.984 5.984 0 0 1 2 6zm6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1z%22/%3E%3C/svg%3E"),
+  "warning": url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 class=%22bi bi-exclamation-triangle%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z%22/%3E%3Cpath d=%22M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z%22/%3E%3C/svg%3E"),
+  "caution": url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 class=%22bi bi-cone-striped%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M9.97 4.88l.953 3.811C10.158 8.878 9.14 9 8 9c-1.14 0-2.159-.122-2.923-.309L6.03 4.88C6.635 4.957 7.3 5 8 5s1.365-.043 1.97-.12zm-.245-.978L8.97.88C8.718-.13 7.282-.13 7.03.88L6.274 3.9C6.8 3.965 7.382 4 8 4c.618 0 1.2-.036 1.725-.098zm4.396 8.613a.5.5 0 0 1 .037.96l-6 2a.5.5 0 0 1-.316 0l-6-2a.5.5 0 0 1 .037-.96l2.391-.598.565-2.257c.862.212 1.964.339 3.165.339s2.303-.127 3.165-.339l.565 2.257 2.391.598z%22/%3E%3C/svg%3E"),
+  "important": url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 class=%22bi bi-exclamation-circle%22 viewBox=%220 0 16 16%22%3E%3Cpath d=%22M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z%22/%3E%3Cpath d=%22M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z%22/%3E%3C/svg%3E")
+);
+
+@each $name, $icon in $callout-icons {
+  .reveal div.callout.callout-#{$name} .callout-icon::before {
+    // The mask paints the shape; the colour underneath is what you see.
+    background-image: none;
+    background-color: map-get($callout-colours, $name);
+    mask-image: $icon;
+    -webkit-mask-image: $icon;
+    mask-size: 1.25em 1.25em;
+    -webkit-mask-size: 1.25em 1.25em;
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+  }
+}
+
+// --------------------------------------------------- semantic inline utilities
+
+// Colour carries meaning here, so each class says what it means rather than
+// which colour it is. One per slide and the deck stays quiet.
+.alert,
+.bad {
+  color: $danger;
+}
+
+.good {
+  color: $success;
+}
+
+// A term being defined for the first time.
+.term {
+  color: $tertiary;
+}
+
+.emph {
+  color: $warning;
+}
+
+.quiet {
+  color: $secondary;
+}
+
+// Arbitrary colour: [text]{.fg col="#8C2F39"}
+.fg {
+  color: var(--col, $body-color);
+}
+
+.bg {
+  background-color: var(--col, mix($warning, $body-bg, 16%));
+  padding: 0.05em 0.25em;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+// ---------------------------------------------------------- block-level boxes
+
+// Held by a hairline rule and the faintest tint — enough to group a few lines
+// without dropping a grey panel onto a white slide.
+.box {
+  border-left: 2px solid $primary;
+  background: $tint;
+  padding: 0.6em 0.9em;
+  margin: 0.9em 0;
+  font-size: 0.92em;
+
+  > :first-child {
+    margin-top: 0;
+  }
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.box-good {
+  @extend .box;
+  border-left-color: $success;
+  background: mix($success, $body-bg, 6%);
+}
+
+.box-alert {
+  @extend .box;
+  border-left-color: $danger;
+  background: mix($danger, $body-bg, 5%);
+}
+
+.box-term {
+  @extend .box;
+  border-left-color: $tertiary;
+  background: mix($tertiary, $body-bg, 5%);
+}
+
+// A takeaway line: the thing you want them to leave with.
+.takeaway {
+  border-top: 1px solid $rule-strong;
+  padding-top: 0.5em;
+  margin-top: 1.2em;
+}
+
+// Beamer-style link button, same class name as clean-revealjs so decks port
+// across: [Paper](https://…){.button}
+.button {
+  display: inline-block;
+  padding: 0.25em 0.6em;
+  margin-bottom: 0;
+  font-size: 0.55em;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: $primary;
+  border: 1px solid $primary;
+  color: $body-bg !important;
+  text-decoration: none;
+  border-radius: 3px;
+  transition: all 0.15s ease-in-out;
+
+  &::before {
+    content: "\25B6";
+    margin-right: 0.4em;
+    font-size: 0.85em;
+  }
+
+  &:hover {
+    background-color: mix($primary, $body-color, 80%);
+    border-color: mix($primary, $body-color, 80%);
+  }
+}
+
+// ------------------------------------------------------- chrome: numbers, menu
+
+// Note the missing `.reveal` ancestor: Reveal appends .slide-number to <body>,
+// outside .reveal, so a `.reveal .slide-number` rule (the obvious guess, and
+// what most themes ship) never matches.
+.slide-number,
+.slide-number a {
+  bottom: 12px !important;
+  right: 16px !important;
+  top: unset !important;
+  background: none !important;
+  color: $secondary !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-variant-numeric: tabular-nums;
+  border-bottom: none;
+}
+
+// A cover does not need a page number.
+body:has(#title-slide.present) .slide-number {
+  display: none !important;
+}
+
+// If a deck sets Quarto's `logo:` option, that mark goes bottom-left on every
+// slide (the title slide's own two logos are separate, see .title-logos).
+.slide-logo {
+  display: block !important;
+  position: fixed !important;
+  bottom: 10px !important;
+  left: 16px !important;
+  max-height: 40px;
+  max-width: 160px;
+  width: auto !important;
+}
+
+.reveal .footer,
+.reveal .footer p {
+  color: $secondary;
+  font-size: 0.5em;
+  font-weight: 400;
+}
+
+.reveal .slide-menu-button {
+  position: fixed;
+  top: 6px;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+.reveal .slide-chalkboard-buttons {
+  position: fixed;
+  top: 12px;
+  right: 26px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+.reveal .progress {
+  color: $primary;
+  height: 2px;
+}
+
+// ------------------------------------------------- livepoll, on the palette
+
+// The livepoll extension ships its own greens and greys; pull them onto the
+// brand so a poll slide does not look like a different deck.
+//
+// The extra `.slides` in the selector is doing real work: livepoll.css is
+// injected *after* the theme, so a bare `.reveal .poll button` rule ties on
+// specificity and loses. It also sets background and colour explicitly —
+// leave them off and a bare <button> picks up whatever the operating system's
+// widget theme fancies, which on a GTK desktop is a solid blue slab.
+.reveal .slides .poll button {
+  font-family: inherit;
+  font-size: 0.7em;
+  font-weight: 400;
+  background: $body-bg;
+  color: $body-color;
+  border: 1px solid mix($primary, $body-bg, 40%);
+  border-radius: 3px;
+  transition:
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out;
+
+  &:hover {
+    background: $tint;
+    border-color: $primary;
+  }
+}
+
+.reveal .slides .poll button.selected {
+  background: $success;
+  border-color: $success;
+  color: $body-bg;
+}
+
+.reveal .poll-answer {
+  color: $success;
+}
+
+.reveal .poll-voters {
+  color: $secondary;
+}
+
+// -------------------------------------------------- countdown timer, on palette
+
+// The last stage keeps red — it is the one moment where the colour is doing real
+// work.
+.base-timer__path-remaining {
+  color: $success;
+
+  &.lvl0 {
+    color: $warning;
+  }
+
+  &.lvl1 {
+    color: $danger;
+  }
+}
+
+.base-timer__path-elapsed {
+  stroke: $rule;
+}
+
+.base-timer__label {
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  font-weight: 300;
+  color: $body-color;
+}
+
+// A paused timer — which is how it sits before anyone touches it — gets a peach
+// face, hardcoded as an inline `fill` in timer.js. Inline styles can only be
+// answered with !important, and the hook is the serialised colour, since the
+// running state is the same element with the fill removed. Repaint it as the
+// faintest amber wash: the "not running" cue survives, on the palette. If a
+// future browser serialises rgb() differently the selector simply misses and the
+// peach comes back — nothing else breaks.
+.base-timer svg circle[style*="255, 204, 187"] {
+  fill: mix($warning, $body-bg, 10%) !important;
+}
+
+// ------------------------------------------------- spinner, on the palette
+
+// The spinner's `classic` preset is a navy cabinet with a red plastic button and
+// a drop shadow — a different deck entirely. It is all driven by custom
+// properties, so re-pointing those at the brand is enough; the extension's other
+// presets (light, dark, casino, minimal) are left exactly as shipped, which is
+// why every selector here is pinned to .sp-theme-classic.
+//
+// The selectors carry `.reveal .slides` for the usual reason: spinner.css is
+// injected after the theme and would otherwise win the tie.
+.reveal .slides .spinner-machine.sp-theme-classic {
+  --sp-label: #{$primary};
+  // Flat ink, no gradient: the cabinet still reads as an object, quietly.
+  --sp-frame: #{$dark};
+  --sp-frame-pad: 8px;
+  --sp-radius: 4px;
+  --sp-window-bg: #{$body-bg};
+  --sp-text: #{$body-color};
+  --sp-band: #{rgba($primary, 0.07)};
+  --sp-band-line: #{rgba($primary, 0.3)};
+  --sp-ptr: #{$warning};
+  --sp-win: #{$success};
+  --sp-win-glow: #{rgba($success, 0.3)};
+  --sp-win-band: #{rgba($success, 0.14)};
+  --sp-row-bg: #{$tint};
+  --sp-shadow: 0 6px 20px #{rgba($body-color, 0.14)};
+  --sp-accent: #{$primary};
+  --sp-accent-dark: #{mix($primary, $body-color, 70%)};
+
+  .sp-machine {
+    box-shadow: var(--sp-shadow);
+  }
+
+  .sp-label {
+    font-weight: 300;
+    font-size: 1.1em;
+  }
+
+  .sp-item {
+    font-weight: 400;
+  }
+
+  .sp-item.sp-taken {
+    font-weight: 400;
+  }
+
+  // The shipped button is a 3D slab with a 5px hard shadow. Same button, flat.
+  .sp-btn {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border-radius: 3px;
+    box-shadow: none;
+
+    &:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+  }
+
+  .sp-btn.sp-ghost {
+    color: $body-color;
+    background: mix($secondary, $body-bg, 8%);
+    box-shadow: none;
+  }
+
+  .sp-status {
+    color: $secondary;
+  }
+
+  .sp-error {
+    color: $danger;
+  }
+
+  .sp-row {
+    border-radius: 0;
+    border-left-width: 2px;
+  }
+
+  .sp-g {
+    font-weight: 600;
+  }
+}
+
+// Results list, both on the machine's own slide and in a later summary block.
+// The side title is a heading, so the h3 rule above has already made it italic
+// lapis; here it goes back to being a quiet label.
+.reveal .slides .sp-side-title {
+  color: $secondary;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.6em;
+  font-variant-caps: small-caps;
+  margin-top: 0;
+}
+
+.reveal .slides .spinner-summary {
+  --sp-label: #{$primary};
+  --sp-row-bg: #{$tint};
+
+  .sp-row {
+    border-radius: 0;
+    border-left-width: 2px;
+  }
+
+  .sp-g {
+    font-weight: 600;
+  }
+}
+
+// ------------------------------------------------------------------- figures
+
+.reveal figcaption,
+.reveal .figure-caption {
+  color: $secondary;
+  font-size: 0.6em;
+  font-style: normal;
+  text-align: left;
+}
+
+.reveal section img {
+  border: none;
+  box-shadow: none;
+  background: none;
+}
+
+// ------------------------------------------------------------------- columns
+
+// Unequal splits, same names as clean-revealjs so decks port across.
+.reveal .columns3070 > div.column:first-child {
+  width: 30%;
+}
+.reveal .columns3070 div.column:not(:first-child) {
+  width: 70%;
+}
+.reveal .columns7030 > div.column:first-child {
+  width: 70%;
+}
+.reveal .columns7030 div.column:not(:first-child) {
+  width: 30%;
+}
+.reveal .columns4060 > div.column:first-child {
+  width: 40%;
+}
+.reveal .columns4060 div.column:not(:first-child) {
+  width: 60%;
+}
+.reveal .columns6040 > div.column:first-child {
+  width: 60%;
+}
+.reveal .columns6040 div.column:not(:first-child) {
+  width: 40%;
+}
+
+// ---------------------------------------------------------------------- misc
+
+.reveal .smaller {
+  font-size: 0.85em;
+}
+
+.reveal hr {
+  border: none;
+  border-top: 1px solid $rule;
+  margin: 1em 0;
+}
+
+::selection {
+  background: mix($primary, $body-bg, 18%);
+}

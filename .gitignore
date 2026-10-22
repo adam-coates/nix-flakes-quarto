@@ -1,0 +1,8 @@
+.direnv/
+
+# The slides template ships only its local extensions; the rest are installed
+# by its ./install-extensions (also run by its dev shell). Entering the shell
+# inside the template would install them here, so keep them out of the repo.
+templates/slides/_extensions/*
+!templates/slides/_extensions/adamcoates/
+!templates/slides/_extensions/spinner/

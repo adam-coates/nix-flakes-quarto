@@ -12,6 +12,11 @@ project:
   output-dir: _site
   render:
     - "week-*/index.qmd"
+    # The reference deck (./render examples). Listed so it is part of the
+    # project: a file outside this list does not see _extensions/ and fails
+    # with "Unable to read the extension 'plate'". After the weeks, because
+    # _site/index.html redirects to the first deck here. ./deploy leaves it out.
+    - template/examples.qmd
   # Puts poll.html (the audience's page, which the QR codes point at) beside
   # every rendered deck.
   post-render:

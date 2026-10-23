@@ -40,8 +40,9 @@ if [[ -z "$target" ]]; then
   # source does not leave a stale copy of itself live. search.json is emitted
   # even with search off and indexes nothing. _site/index.html is kept: it is
   # Quarto's redirect to the first week, so the base URL lands on a deck.
-  rsync -a --delete --exclude 'site_libs' --exclude 'search.json' --exclude '.*' \
-    _site/ "$DEST/"
+  # template/ is the reference deck, which stays home.
+  rsync -a --delete --exclude 'site_libs' --exclude 'template' --exclude 'search.json' \
+    --exclude '.*' _site/ "$DEST/"
   published=$(find _site -mindepth 2 -name index.html -printf '%h\n' \
     | grep -v '^_site/site_libs' | sed 's|^_site/||' | sort)
 else

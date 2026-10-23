@@ -6,6 +6,7 @@
 #   ./build 03 --pdf    that week's deck and its PDF handout
 #   ./build             every week, decks only
 #   ./build --pdf       every week, decks and handouts
+#   ./build examples    the reference deck, template/examples.qmd
 #
 # --pdf is opt-in because lualatex costs ~15 s a week, a poor trade while you
 # are writing and re-rendering every couple of minutes. `./deploy` always
@@ -57,6 +58,8 @@ if [[ -z "$target" ]]; then
   # have since renamed or deleted, and `deploy` would then publish that ghost.
   rm -rf _site
   quarto render "${to[@]}"
+elif [[ "$target" == "examples" ]]; then
+  quarto render template/examples.qmd "${to[@]}"
 else
   dir=$(resolve_week "$target") || {
     echo "no folder matching '$target'; ./new-week $target creates one." >&2

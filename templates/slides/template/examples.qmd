@@ -1,0 +1,138 @@
+---
+# Reference deck: the classic layout and the results-chart options, one slide
+# each, to copy from. Not a week: ./render examples builds it, and ./deploy
+# leaves it out. The template's default layout is embedded, so every question
+# here says layout="classic" itself.
+title: "Classic polls and charts"
+subtitle: "Examples to copy from"
+seminar:
+  room: "examples"
+---
+
+## Join in
+
+Scan to open the poll page (or press **Shift+Q** at any time).
+
+::: {.poll-qr size="300"}
+:::
+
+## A classic poll
+
+::: {.poll #measure layout="classic"}
+A bathroom scale that always reads 3 kg too heavy is:
+
+- [x] reliable but not valid
+- [ ] valid but not reliable
+- [ ] neither
+- [ ] both
+:::
+
+::: {.notes}
+Buttons here, the chart on the next slide. `- [x]` marks the correct answer.
+:::
+
+## Results: the defaults
+
+::: {.poll-results for="measure" show-question="true"}
+:::
+
+::: {.notes}
+Space reveals the answer: the correct bar turns green, and the phones show it.
+:::
+
+## Results: vertical, styled
+
+::: {.poll-results for="measure" orientation="vertical" font-size="18" color="#444" grid-color="#eee" label-wrap="14" height="420px"}
+:::
+
+::: {.notes}
+orientation="vertical" puts the options along the bottom; font-size sets all
+the chart's text, color and grid-color the text and grid lines, label-wrap
+wraps long options, height the chart's height.
+:::
+
+## A poll without letters
+
+::: {.poll #pace layout="classic" question="How was the pace of this session?"}
+- [too slow]{value="too slow"}
+- [just right]{value="just right"}
+- [too fast]{value="too fast"}
+:::
+
+::: {.notes}
+Giving every option a value drops the A. / B. / C. letters.
+:::
+
+## Results: per-axis sizes
+
+::: {.poll-results for="pace" x-tick-size="14" y-tick-size="26" color="#444"}
+:::
+
+::: {.notes}
+x-tick-size and y-tick-size size the bottom and the left axis separately: here
+small counts along the bottom and large options down the side.
+:::
+
+## A classic rating scale
+
+::: {.likert #course layout="classic" scale="agree-5"}
+- The readings were relevant to the lectures
+- The live polls helped me check my understanding
+- The pace of the course was about right
+:::
+
+## Rating results: the defaults
+
+::: {.poll-results for="course"}
+:::
+
+::: {.notes}
+A stacked bar per statement, the legend underneath.
+:::
+
+## Rating results: vertical, legend right
+
+::: {.poll-results for="course" orientation="vertical" legend="right" legend-size="13" x-tick-size="18" label-wrap="16" color="#444"}
+:::
+
+::: {.notes}
+legend takes top / bottom / left / right / false, legend-size its text size.
+Polls have no legend: a poll chart is one unnamed set of bars.
+:::
+
+## A numeric scale
+
+::: {.likert #useful layout="classic" scale="1-5" low="Not useful" high="Very useful"}
+How useful was today?
+:::
+
+## Numeric results: legend on top
+
+::: {.poll-results for="useful" legend="top" font-size="20" color="#444"}
+:::
+
+::: {.notes}
+A numeric scale needs its legend to say which shade is which number.
+legend="false" hides it, for a chart that reads without one.
+:::
+
+## A classic word cloud
+
+::: {.wordcloud #oneword layout="classic" max-words="1" height="320px"}
+Describe today in one word.
+:::
+
+## Deck-wide chart defaults
+
+Every option above also goes in `_quarto.yml`, for all charts at once; a
+chart's own attributes still win:
+
+```yaml
+livepoll:
+  chart:
+    color: "#444"
+    font-size: 18
+```
+
+Polls, rating scales and word clouds take `layout="embedded"` instead for
+everything on one slide (the template's default): see `week.qmd`.

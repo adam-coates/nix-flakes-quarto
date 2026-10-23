@@ -38,6 +38,7 @@
             adjustbox
             microtype
             koma-script
+            framed # the handout's highlighted code blocks
           ]
         );
       in

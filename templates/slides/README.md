@@ -26,6 +26,7 @@ Then once, before the first live poll: set your venue and password hash in
 | --- | --- |
 | `./new-week 03 [slug] ["Title"]` | new `week-03[-slug]/index.qmd` from `template/week.qmd` |
 | `./render 03` | build that week and serve it on :8082 (`./render` for all) |
+| `./render examples` | the reference deck: classic polls, rating scales and every chart option |
 | `./build 03 [--pdf]` | build only; `--pdf` adds the handout `week-03.pdf` |
 | `./deploy [03]` | build with handouts and copy into your site (set `DEST` and `BASE_URL` at the top of `./deploy`) |
 | `./install-extensions [--update]` | install missing extensions; `--update` reinstalls all at their latest versions |
@@ -38,7 +39,8 @@ Weeks can be given as `3`, `03`, `week-03` or the full folder name.
 _quarto.yml      shared settings: formats, plugins, author, poll server
 _brand.yml       colours and fonts for slides and handouts
 logos/           the title-slide logos (left.jpg, right.png)
-template/        week.qmd, the seed ./new-week copies
+template/        week.qmd, the seed ./new-week copies; examples.qmd, a
+                 reference deck of the classic layout and chart options
 week-NN-slug/    one folder per deck: index.qmd plus its figures and data
 _extensions/     the extensions (below): plate and spinner ship with the
                  template, the rest are installed by ./install-extensions
@@ -65,7 +67,10 @@ _extensions/     the extensions (below): plate and spinner ship with the
 :::
 ````
 
-`template/week.qmd` has a working example of each.
+`template/week.qmd` has a working example of each. `template/examples.qmd`
+(`./render examples`) shows the classic layout, with buttons on one slide
+and the chart on the next, and the chart options, from the defaults to every
+setting.
 
 | key | |
 | --- | --- |

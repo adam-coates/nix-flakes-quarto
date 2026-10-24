@@ -25,7 +25,7 @@ Then once, before the first live poll: set your venue and password hash in
 | command | what it does |
 | --- | --- |
 | `./new-week 03 [slug] ["Title"]` | new `week-03[-slug]/index.qmd` from `template/week.qmd` |
-| `./render 03` | build that week and serve it on :8082 (`./render` for all) |
+| `./render 03` | build that week, serve it on :8082 and open the deck and its poll page (`./render` for all; `OPEN=0` to not open them) |
 | `./render examples` | the reference deck: classic polls, rating scales and every chart option |
 | `./build 03 [--pdf]` | build only; `--pdf` adds the handout `week-03.pdf` |
 | `./deploy [03]` | build with handouts and copy into your site (set `DEST` and `BASE_URL` at the top of `./deploy`) |

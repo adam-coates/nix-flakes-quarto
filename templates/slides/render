@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Render a week (or everything) and serve it on :8082.
+# Render a week (or everything), serve it on :8082, and open the deck and its
+# poll page in the browser.
 #
 #   ./render 03          one week: the fast path while writing
 #   ./render             every week
 #   ./render examples    the reference deck of classic polls and chart options
+#   OPEN=0 ./render 03   serve without opening the browser
 #
 # The deck and its poll page are served from one origin, which the live polls
 # need: http://localhost:8082/week-03/ and .../week-03/poll.html
@@ -34,4 +36,34 @@ echo
 echo "deck  -> http://localhost:${port}${deck}"
 echo "poll  -> http://localhost:${port}${poll}"
 echo
-cd _site && python3 -m http.server "$port"
+
+# Serve in the background, so both pages can be opened once the server
+# answers; Ctrl-C still stops it, as it did when it ran in the foreground.
+cd _site
+python3 -m http.server "$port" &
+server=$!
+trap 'kill "$server" 2>/dev/null || true' EXIT INT TERM
+
+# Open the poll page, then the deck (the last one opened is the one in
+# front). OPEN=0 ./render 03 serves without opening anything.
+open_url() {
+  if command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "$1" >/dev/null 2>&1 &
+  elif command -v open >/dev/null 2>&1; then
+    open "$1"
+  fi
+}
+
+if [[ "${OPEN:-1}" != 0 ]]; then
+  # Up to ~5 s for the server to answer; python3 is in the dev shell already.
+  for ((i = 0; i < 50; i++)); do
+    python3 -c "import urllib.request, sys; urllib.request.urlopen(sys.argv[1], timeout=1)" \
+      "http://localhost:${port}/" >/dev/null 2>&1 && break
+    sleep 0.1
+  done
+  open_url "http://localhost:${port}${poll}"
+  sleep 0.5 # two URLs at once can land in two windows; one after the other, two tabs
+  open_url "http://localhost:${port}${deck}"
+fi
+
+wait "$server"

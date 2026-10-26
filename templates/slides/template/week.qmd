@@ -55,6 +55,17 @@ Two minutes. Press <kbd>`</kbd> to draw on the slide.
 :::
 :::
 
+## Draw your guess
+
+::: {.sketch #guess x="0,10" y="0,100" x-label="Weeks of practice" y-label="Skill (%)" answer="0:5, 2:40, 4:62, 6:76, 8:85, 10:90"}
+How does skill grow with practice?
+:::
+
+::: {.notes}
+Phones draw a curve; space reveals the real data (dashed). Change x and y to
+your axes' ranges, and answer to the real data as x:y points.
+:::
+
 ## How did today go?
 
 ::: {.likert #feedback scale="agree-5"}

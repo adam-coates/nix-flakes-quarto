@@ -1,12 +1,23 @@
 ---
-# Reference deck: the classic layout and the results-chart options, one slide
-# each, to copy from. Not a week: ./render examples builds it, and ./deploy
-# leaves it out. The template's default layout is embedded, so every question
-# here says layout="classic" itself.
-title: "Classic polls and charts"
-subtitle: "Examples to copy from"
+# Reference deck, one slide per feature, to copy from. Not a week: ./render
+# examples builds it, and ./deploy leaves it out.
+#
+#   Part 1: every kind of question in the template's default, embedded layout
+#           (question, results and QR on one slide), plus the quiz.
+#   Part 2: the classic layout (buttons on one slide, the chart on the next)
+#           and the results-chart options; every question there says
+#           layout="classic" itself.
+title: "Live polls: examples"
+subtitle: "Every question type and chart option, to copy from"
 seminar:
   room: "examples"
+livepoll:
+  # A deck's own livepoll: block replaces _quarto.yml's rather than adding to
+  # it, so the project's two settings are repeated here.
+  layout: embedded
+  auto-activate: true
+  # nicknames, points and the leaderboard at the end of part 1
+  quiz: true
 ---
 
 ## Join in
@@ -15,6 +26,149 @@ Scan to open the poll page (or press **Shift+Q** at any time).
 
 ::: {.poll-qr size="300"}
 :::
+
+# Every question type
+
+## A poll with an answer
+
+::: {.poll #capital}
+- [ ] Sydney
+- [x] Canberra
+- [ ] Melbourne
+- [ ] Perth
+:::
+
+::: {.notes}
+`- [x]` marks the answer. Space reveals it: the right row turns green, and the
+phones show it too. With the quiz on, right answers score points.
+:::
+
+## Results hidden until the reveal
+
+::: {.poll #pvalue results="hidden"}
+A p-value of 0.03 means:
+
+- [ ] There is a 3% chance the null hypothesis is true
+- [x] Data this extreme would occur 3% of the time if the null were true
+- [ ] There is a 97% chance the result is real
+:::
+
+::: {.notes}
+results="hidden": the votes are counted but the bars stay hidden, so the room
+isn't swayed by them. Space shows the results, then the answer.
+:::
+
+## Pick every prime
+
+::: {.poll #primes max-choices="3"}
+- [x] 2
+- [x] 3
+- [ ] 9
+- [x] 11
+:::
+
+::: {.notes}
+max-choices="3": phones get toggles and a Submit button; the bars show the
+share of people who picked each option.
+:::
+
+## Peer instruction
+
+::: {.poll #ci rounds="2" timer="60"}
+A 95% confidence interval for a mean is (4.1, 5.3). Which is right?
+
+- [ ] There is a 95% chance the true mean is in (4.1, 5.3)
+- [x] 95% of intervals built this way contain the true mean
+- [ ] 95% of the data lie in (4.1, 5.3)
+:::
+
+::: {.notes}
+Vote, talk to your neighbour, vote again. The minute's timer moves on to round
+2 by itself (or press space); round 2's bars show where round 1 was. Shift+T
+pauses the timer.
+:::
+
+## How many?
+
+::: {.estimate #beans min="0" max="1000" answer="412" tolerance="10%"}
+How many jelly beans are in the jar?
+:::
+
+::: {.notes}
+A histogram of the guesses and their median; space draws the answer.
+tolerance="10%" is what counts as right in the quiz.
+:::
+
+## What should we revisit?
+
+::: {.rank #revisit top="3"}
+Put your top three in order.
+
+- Sampling distributions
+- Confidence intervals
+- Hypothesis tests
+- Power
+- Regression
+:::
+
+## Spot the outlier
+
+::: {.hotspot #outlier answer="0.75,0.80,0.05"}
+Tap the point that does not fit.
+
+![](scatter.svg)
+:::
+
+::: {.notes}
+A heat map of the taps. answer="x,y,radius" (fractions of the image's width
+and height) is the circle space reveals.
+:::
+
+## Draw your guess
+
+::: {.sketch #rt x="20,80" y="200,600" x-label="Age" y-label="Reaction time (ms)" answer="20:250, 40:280, 60:340, 80:450"}
+How does reaction time change with age?
+:::
+
+::: {.notes}
+Phones draw a curve with a finger. The slide shows every curve, the class
+median and the middle half; space reveals the real data (dashed) and how many
+came close.
+:::
+
+## How confident are you running a t-test in R?
+
+::: {.likert #confidence scale="0-10" low="Not at all" high="Completely"}
+:::
+
+## How was the pace?
+
+::: {.likert #speed labels="Too slow|Just right|Too fast"}
+- Pace of today's lecture
+:::
+
+## Your questions
+
+::: {.qa}
+:::
+
+::: {.notes}
+Phones have a Questions tab all session: ask, and upvote others' questions.
+The presenter's panel can mark them answered, hide them, or show one full
+screen. `livepoll: qa: moderated` holds each for approval first.
+:::
+
+## Leaderboard
+
+::: {.leaderboard}
+:::
+
+::: {.notes}
+With `livepoll: quiz: true` (this deck's YAML) the phones ask for a nickname,
+and each revealed answer scores. Rename gives a player a neutral name.
+:::
+
+# Classic layout and charts
 
 ## A classic poll
 
@@ -135,4 +289,4 @@ livepoll:
 ```
 
 Polls, rating scales and word clouds take `layout="embedded"` instead for
-everything on one slide (the template's default): see `week.qmd`.
+everything on one slide (the template's default): see part 1, and `week.qmd`.

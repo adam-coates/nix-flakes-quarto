@@ -1,8 +1,10 @@
 # Slides
 
-Quarto revealjs decks in the plate theme, with live polls, word clouds and
-rating scales, a countdown timer, drawing on slides, a laser pointer, animated
-annotations and a random spinner, plus a PDF handout of every deck. One folder
+Quarto revealjs decks in the plate theme, with live polls, word clouds,
+rating scales, estimates, rankings, "tap the image" and "draw your guess"
+questions, audience Q&A and a quiz, plus a countdown timer, drawing on slides,
+a laser pointer, animated annotations and a random spinner, and a PDF handout
+of every deck. One folder
 per week; everything shared lives once at the root.
 
 ## Start
@@ -26,7 +28,7 @@ Then once, before the first live poll: set your venue and password hash in
 | --- | --- |
 | `./new-week 03 [slug] ["Title"]` | new `week-03[-slug]/index.qmd` from `template/week.qmd` |
 | `./render 03` | build that week, serve it on :8082 and open the deck and its poll page (`./render` for all; `OPEN=0` to not open them) |
-| `./render examples` | the reference deck: classic polls, rating scales and every chart option |
+| `./render examples` | the reference deck: every question type, the quiz, the classic layout and every chart option |
 | `./build 03 [--pdf]` | build only; `--pdf` adds the handout `week-03.pdf` |
 | `./deploy [03]` | build with handouts and copy into your site (set `DEST` and `BASE_URL` at the top of `./deploy`) |
 | `./install-extensions [--update]` | install missing extensions; `--update` reinstalls all at their latest versions |
@@ -40,7 +42,8 @@ _quarto.yml      shared settings: formats, plugins, author, poll server
 _brand.yml       colours and fonts for slides and handouts
 logos/           the title-slide logos (left.jpg, right.png)
 template/        week.qmd, the seed ./new-week copies; examples.qmd, a
-                 reference deck of the classic layout and chart options
+                 reference deck of every question type and chart option
+                 (scatter.svg is its "tap the image" picture)
 week-NN-slug/    one folder per deck: index.qmd plus its figures and data
 _extensions/     the extensions (below): plate and spinner ship with the
                  template, the rest are installed by ./install-extensions
@@ -61,6 +64,14 @@ _extensions/     the extensions (below): plate and spinner ship with the
 - The pace was right
 :::
 
+::: {.sketch #guess x="0,10" y="0,100" answer="0:5, 4:62, 10:90"}  <!-- draw your guess -->
+How does skill grow with practice?
+:::
+
+::: {.estimate #beans min="0" max="1000" answer="412"}  <!-- also .rank, .hotspot -->
+How many jelly beans are in the jar?
+:::
+
 [this]{.rn-fragment rn-type=underline}  <!-- annotation drawn on the next step -->
 
 ::: {.timer #t1 seconds=120 starton=interaction}
@@ -68,9 +79,13 @@ _extensions/     the extensions (below): plate and spinner ship with the
 ````
 
 `template/week.qmd` has a working example of each. `template/examples.qmd`
-(`./render examples`) shows the classic layout, with buttons on one slide
-and the chart on the next, and the chart options, from the defaults to every
-setting.
+(`./render examples`) has every question type in the embedded layout
+(answers revealed with space, results hidden until the reveal, several
+correct answers, peer instruction rounds with a timer, estimates, rankings,
+tapping an image, drawing a curve, numeric and labelled scales, audience Q&A
+and the quiz leaderboard), then the classic layout, with buttons on one
+slide and the chart on the next, and the chart options, from the defaults to
+every setting.
 
 | key | |
 | --- | --- |
@@ -97,6 +112,12 @@ To present: open the deck, Shift+L, enter the password, Start. The audience
 scans the QR code. After class, Alt+R and move `session.json` into the week's
 folder: re-rendering then shows the results on the slides, and `./build --pdf`
 puts them in the handout.
+
+To change a live-poll setting for one week only (say, `quiz: true`), note
+that a `livepoll:` block in the week's YAML replaces the one in
+`_quarto.yml` rather than adding to it, so repeat the project's settings
+there (`layout: embedded`, `auto-activate: true`), as
+`template/examples.qmd` does.
 
 Everything about the polls, layouts and chart options:
 [seminar-quarto](https://github.com/adam-coates/seminar-quarto).

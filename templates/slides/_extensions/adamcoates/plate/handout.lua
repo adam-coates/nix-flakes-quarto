@@ -49,6 +49,14 @@ local drop_classes = {
   wordcloud = true,
   -- A rating scale is the same: the question and its buttons are for the room.
   likert = true,
+  -- So are the other question types (an estimate, a ranking, a tap on an
+  -- image, a drawn curve), and the Q&A board and quiz leaderboard.
+  estimate = true,
+  rank = true,
+  hotspot = true,
+  sketch = true,
+  qa = true,
+  leaderboard = true,
   ["poll-qr"] = true,
 }
 

@@ -1,0 +1,6 @@
+/* Response letter styles for HTML output and the markdown preview. Colours match
+   preamble.tex; theme variables (when the preview has a theme) take priority. */
+.reviewer-comment { color: var(--color-text-primary, #212121); }
+.response, .response-inline, .figcaption { color: var(--color-text-link, #2A6099); }
+.citation, .citation-inline { color: var(--color-citation, #729FCF); font-style: italic; }
+.references { font-size: 0.95em; }

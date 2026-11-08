@@ -22,6 +22,7 @@ format:
     reference-doc: custom-reference.docx
 filters:
   - response-letter
+css: response-letter.css
 ---
 
 We would like to thank both of the reviewers for their helpful comments and suggestions in helping us to improve our manuscript. We have addressed all concerns and believe that our manuscript is now ready for publication. Below we provide a detailed response to each of the points raised by the reviewers (in black font). Our response is provided in [blue font]{.response-inline}. Citations of new or changed parts of the revised manuscript are shown in [light blue italic]{.citation-inline}.
